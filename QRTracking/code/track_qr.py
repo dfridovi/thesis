@@ -33,7 +33,8 @@ MINGOODMATCHES = 4
 SCALE = 0.5
 CROPFACTOR = 1.2
 FILTERTAP = 0.1
-VALIDBOXTHRESH = 0.25
+VALIDBOXAREATHRESH = 0.25
+VALIDBOXDIMTHRESH = 50
 
 # color filtering
 def filterColor(img):
@@ -134,17 +135,22 @@ def findBestTemplate(templates, gray_test, orb, bf):
     return best_match, matching_params
 
 # check if new bounding box is valid by ensuring the change in area is less
-# than some threshold
+# than some threshold and that the smallest dimension is above 
+# some threshold
 def isValidBox(last_topleft, last_botright, new_topleft, new_botright):
     if ((last_topleft is not None) and (last_botright is not None) and
         (new_topleft is not None) and (new_botright is not None)):
 
-        last_area = float((last_botright[0] - last_topleft[0]) * 
-                          (last_botright[1] - last_topleft[1]))
-        new_area = float((new_botright[0] - new_topleft[0]) * 
-                         (new_botright[1] - new_topleft[1]))
+        last_width = last_botright[0] - last_topleft[0] 
+        last_height = last_botright[1] - last_topleft[1] 
+        new_width = new_botright[0] - new_topleft[0] 
+        new_height = new_botright[1] - new_topleft[1] 
+
+        last_area = float(last_width * last_height)
+        new_area = float(new_width * new_height)
         
-        if (abs(new_area - last_area) / last_area) < VALIDBOXTHRESH:
+        if ((abs(new_area - last_area) / last_area < VALIDBOXAREATHRESH) and 
+            (min(new_width, new_height) > VALIDBOXDIMTHRESH)):
             return True
         return False
 
@@ -296,7 +302,9 @@ def runTracker():
                 last_botright = new_botright
 
             else:
-                print "Found an invalid bounding box. Using old bounding box."
+                print ("[FRAME " + str(frame) + 
+                       "]: Found an invalid bounding box. " +  
+                       "Using old bounding box.")
                 corners_test = templates[best_match]['corners']
 
             # draw boundary of ex code
@@ -305,15 +313,15 @@ def runTracker():
             # save frame
             misc.imsave(OUTPUTPATH + OUTPUTBASENAME % frame, gray_test)
 
+            # print elapsed time
+            print ("Total elapsed time for frame " + str(frame) + ": " + 
+                   str(time.time() - starttime) + " seconds")
+
             # update parameters (and repack) for next run
             templates[best_match]['kp'] = kp_test
             templates[best_match]['des'] = des_test
             templates[best_match]['corners'] = corners_test
             frame = frame + 1
-
-            # print elapsed time
-            print ("Total elapsed time for frame " + str(frame) + ": " + 
-                   str(time.time() - starttime) + " seconds")
 
         else:
             print "Did not find a good match in frame " + str(frame) + "."
