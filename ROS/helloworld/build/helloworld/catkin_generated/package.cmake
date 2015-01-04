@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "helloworld")
+set(helloworld_MAINTAINER "squirrel <squirrel@todo.todo>")
+set(helloworld_DEPRECATED "")
+set(helloworld_VERSION "0.0.0")
+set(helloworld_BUILD_DEPENDS "roscpp" "rospy" "std_msgs")
+set(helloworld_RUN_DEPENDS "roscpp" "rospy" "std_msgs")
+set(helloworld_BUILDTOOL_DEPENDS "catkin")
