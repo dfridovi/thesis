@@ -1,0 +1,8 @@
+prefix=/home/squirrel/thesis/ROS/turtlebot_circles/install
+
+Name: turtlebot_circles
+Description: Description of turtlebot_circles
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/squirrel/thesis/ROS/turtlebot_circles/install/lib 
+Requires: 
