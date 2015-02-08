@@ -1,0 +1,7 @@
+"""
+Launch file to start all process for thesis demo.
+"""
+
+from fabric.api import run
+
+def
