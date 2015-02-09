@@ -2,14 +2,18 @@
 Launch file to start all process for thesis demo.
 """
 
+import subprocess
 import spur
-import time
+import time, sys
 
+start = time.time()
 shell = spur.LocalShell()
-minimum_launch = shell.spawn(["roslaunch", "turtlebot_bringup", "minimal.launch"], 
-                             stdout=1, store_pid=True)
+command = ["python", "test_stdout.py"]
+process = shell.spawn(command, stdout=sys.stdout, store_pid=True)
 
-print minimum_launch.pid
-minimum_launch.wait_for_result()
+print process.pid
+message = "[demo_launch] Waiting... Elapsed time: "
+while True:
+    time.sleep(5)
+    print message + str(int(time.time() - start)) + " seconds"
     
-

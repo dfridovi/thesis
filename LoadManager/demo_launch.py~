@@ -2,6 +2,17 @@
 Launch file to start all process for thesis demo.
 """
 
-from fabric.api import run
+import subprocess
+import spur
+import time, sys
 
-def
+start = time.time()
+shell = spur.LocalShell()
+command = ["python", "test_stdout.py"]
+process = shell.spawn(command, stdout=sys.stdout, store_pid=True)
+
+print process.pid
+while True:
+    time.sleep(5)
+    print "Waiting... Elapsed time: " + str(int(time.time() - start))
+    
