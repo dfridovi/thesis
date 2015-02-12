@@ -2,7 +2,6 @@
 Launch file to start all process for thesis demo.
 """
 
-import subprocess
 import spur
 import time, sys, os
 
