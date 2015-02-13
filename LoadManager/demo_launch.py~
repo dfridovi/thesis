@@ -1,26 +1,52 @@
 """
-Launch file to start all process for thesis demo.
+Launch file to start all processes for thesis demo.
 """
 
+from collections import deque
 import spur
 import time, sys, os
 
 start = time.time()
 
-# set up shell
-shell = spur.SshShell(hostname="10.8.244.74", 
-                      username="pi", 
-                      password="raspberry") 
-command = ["python", "-u", "test_stdout.py"]
-path = "/home/pi/thesis/LoadManager"
+# set up shells
+squirrel = spur.SshShell(hostname="10.9.160.238", 
+                         username="squirrel", 
+                         password="asdf")
+asdf = spur.SshShell(hostname="10.8.190.94", 
+                     username="asdf", 
+                     password="asdf")
+ 
+# set up a queue of commands to execute
+commandQueue = deque()
+commandQueue.append({"command" : ["roscore"],
+                     "host"    : squirrel})
+commandQueue.append({"command" : ["roslaunch", 
+                                  "turtlebot_bringup", 
+                                  "minimum.launch"],
+                     "host"    : asdf})
+commandQueue.append({"command" : ["roslaunch", 
+                                  "turtlebot_navigation", 
+                                  "gmapping_demo.launch"],
+                     "host"    : asdf})
+commandQueue.append({"command" : ["roslaunch",
+                                  "turtlebot_rviz_launchers",
+                                  "view_navigation.launch"],
+                     "host"    : asdf})
 
-# launch process
-process = shell.spawn(command,
-                      cwd=path,
-                      stdout=sys.stdout, 
-                      store_pid=True)
+# launch processes in order
+for task in commandQueue:
+    command = task["command"]
+    shell = task["host"]
 
-print process.pid
+    process = shell.spawn(command,
+                          stdout=sys.stdout, 
+                          store_pid=True)
+    print str(command) + " pid: " + str(process.pid)
+
+    # wait until each command is done
+    time.sleep(10) # for now, just wait 10 seconds
+
+
 #print process.output
 message = "[demo_launch] Waiting... Elapsed time: "
 while True:
