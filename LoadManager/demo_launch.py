@@ -4,7 +4,7 @@ Launch file to start all processes for thesis demo.
 
 from collections import deque
 import spur
-import time, sys, os, signal
+import time, sys, os
 
 start = time.time()
 
@@ -130,7 +130,8 @@ try:
                               stdout=sys.stdout, 
                               store_pid=True)
         
-        processQueue.append(process)
+        processQueue.append({"process" : process,
+                             "command" : command})
         print str(command) + " pid: " + str(process.pid)
         
 
@@ -143,8 +144,10 @@ try:
         time.sleep(1)
         
 except KeyboardInterrupt:
-    while len(processQueue) > 0:
-        processQueue.pop().send_signal(signal.CTRL_C_EVENT)
+    while len(processQueue) > 0
+        task = processQueue.pop()
+        print "Terminating " + str(task["command"])
+        task["process"].send_signal(15) # kill -15 is a SIGTERM signal
 
     print "All processes shut down cleanly."
     sys.exit()
