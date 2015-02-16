@@ -16,15 +16,15 @@ RPI_PASSWORD = "raspberry"
 SQUIRREL = "squirrel@squirrel"
 SQUIRREL_PASSWORD = "asdf"
 
-SSH = ["ssh", "-t", "-t", RPI]
+SSH = ["ssh", "-t", "-t", SQUIRREL]
 COMMAND = "printenv"
 
 ssh = subprocess.Popen(SSH, 
                        stdin=subprocess.PIPE, 
 #                       stdout=subprocess.PIPE, 
                        stderr=subprocess.PIPE)
-time.sleep(2)
-ssh.stdin.write(RPI_PASSWORD + "\n")
+
+ssh.stdin.write(SQUIRREL_PASSWORD + "\n")
 ssh.stdin.flush()
 ssh.stdin.write(COMMAND + "\n")
 
