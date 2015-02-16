@@ -24,8 +24,8 @@ ssh = subprocess.Popen(SSH,
 #                       stdout=subprocess.PIPE, 
                        stderr=subprocess.PIPE)
 
-ssh.stdin.write(SQUIRREL_PASSWORD + "\n")
-ssh.stdin.flush()
+#ssh.stdin.write(SQUIRREL_PASSWORD + "\n")
+#ssh.stdin.flush()
 ssh.stdin.write(COMMAND + "\n")
 
 print "holding loop"
