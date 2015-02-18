@@ -19,7 +19,7 @@ ASDF = "asdf"
 def openSSH(usr, ip):
    
     SSH = ["ssh", "-t", "-t", usr + "@" + ip]
-    ssh = subprocess.Popen(SSH, stdin=subprocess.PIPE)
+    ssh = psutil.Popen(SSH, stdin=subprocess.PIPE)
     return ssh
 
 def navigation():

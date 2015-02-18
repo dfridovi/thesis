@@ -53,16 +53,16 @@ def mapping():
 
     # "roslaunch turtlebot_rviz_launchers view_navigation.launch"
 
-    roscore = openSSH(RPI_USR, RPI_IP)
+    roscore = openSSH(SQUIRREL, SQUIRREL)
     roscore.stdin.write(ROSCORE + "\n")
     time.sleep(5)
     
-#    minlaunch = openSSH(ASDF, ASDF)
-#    minlaunch.stdin.write(MIN_LAUNCH + "\n")
-#    time.sleep(5)
+    minlaunch = openSSH(ASDF, ASDF)
+    minlaunch.stdin.write(MIN_LAUNCH + "\n")
+    time.sleep(5)
     
-#    maplaunch = openSSH(ASDF, ASDF)
-#    maplaunch.stdin.write(MAP_LAUNCH + "\n")
+    maplaunch = openSSH(ASDF, ASDF)
+    maplaunch.stdin.write(MAP_LAUNCH + "\n")
 
 
 def main():
