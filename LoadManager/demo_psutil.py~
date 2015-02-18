@@ -11,17 +11,18 @@ import psutil, subprocess
 import time, sys, os
 
 
-def openSSH(ip, usr):
+# set up shells
+(RPI_USR, RPI_IP) = ("pi", "10.8.244.74")
+SQUIRREL = "squirrel"
+ASDF = "asdf"
+
+def openSSH(usr, ip):
    
     SSH = ["ssh", "-t", "-t", usr + "@" + ip]
     ssh = subprocess.Popen(SSH, stdin=subprocess.PIPE)
     return ssh
 
 def navigation():
-    # set up shells
-    RPI = "pi@10.8.244.74"
-    SQUIRREL = "squirrel"
-    ASDF = "asdf"
 
     ROSCORE = "roscore"
     MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch"
@@ -44,18 +45,15 @@ def navigation():
     amcllaunch.stdin.write(AMCL_LAUNCH + "\n")
 
 def mapping():
-    # set up shells
-    RPI = "pi@10.8.244.74"
-    SQUIRREL = "squirrel"
-    ASDF = "asdf"
 
+    PRINTENV = "printenv"
     ROSCORE = "roscore"
     MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch"
     MAP_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch"
 
     # "roslaunch turtlebot_rviz_launchers view_navigation.launch"
 
-    roscore = openSSH(SQUIRREL, SQUIRREL)
+    roscore = openSSH(RPI_USR, RPI_IP)
     roscore.stdin.write(ROSCORE + "\n")
     time.sleep(5)
     
@@ -66,10 +64,8 @@ def mapping():
 #    maplaunch = openSSH(ASDF, ASDF)
 #    maplaunch.stdin.write(MAP_LAUNCH + "\n")
 
-def main():
 
-    KILL = "kill -15 "
-    
+def main():
 
     try:
         mapping()
