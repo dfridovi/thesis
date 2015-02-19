@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "activity_monitor")
+set(activity_monitor_MAINTAINER "squirrel <squirrel@todo.todo>")
+set(activity_monitor_DEPRECATED "")
+set(activity_monitor_VERSION "0.0.0")
+set(activity_monitor_BUILD_DEPENDS "rospy" "std_msgs")
+set(activity_monitor_RUN_DEPENDS "rospy" "std_msgs")
+set(activity_monitor_BUILDTOOL_DEPENDS "catkin")

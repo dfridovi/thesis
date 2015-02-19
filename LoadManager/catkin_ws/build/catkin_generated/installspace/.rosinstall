@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/squirrel/thesis/LoadManager/catkin_ws/install/setup.sh

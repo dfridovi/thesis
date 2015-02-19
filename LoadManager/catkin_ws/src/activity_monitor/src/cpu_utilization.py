@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Broadcast CPU utilization as a ROS topic.
 """
