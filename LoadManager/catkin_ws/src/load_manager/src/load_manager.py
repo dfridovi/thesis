@@ -9,7 +9,7 @@ import rospy
 from std_msgs.msg import String
 import time, sys, os
 
-from filterCPU import FilterCPU
+#from filterCPU import FilterCPU
 
 # set up shells
 (RPI_USR, RPI_IP) = ("pi", "10.8.244.74")
@@ -17,6 +17,7 @@ SQUIRREL = "squirrel"
 ASDF = "asdf"
 
 IP_SQUIRREL = "10_9_160_238"
+IP_ASDF = "10_8_190_94"
 
 load_data = {}
 
@@ -70,17 +71,19 @@ def mapping():
 
 def callback(data):
     print data.data
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s" % data)
+    rospy.loginfo(rospy.get_caller_id() + " I heard %s" % data)
 
 def main():
-    load_data[SQUIRREL] = FilterCPU()
+#    load_data[SQUIRREL] = FilterCPU()
+#    load_data[ASDF] = FilterCPU()
 
-    rospy.init_node("listener", anonymous=True)
     rospy.Subscriber("cpu_util/" + IP_SQUIRREL, String, callback)
+    rospy.Subscriber("cpu_util/" + IP_ASDF, String, callback)
     rospy.spin()
 
 if __name__ == "__main__":
     try:
+        rospy.init_node("load_manager", anonymous=True)
         main()
     except rospy.ROSInterruptException:
         pass
