@@ -90,6 +90,7 @@ IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   INCLUDE("/home/squirrel/thesis/LoadManager/catkin_ws/build/gtest/cmake_install.cmake")
   INCLUDE("/home/squirrel/thesis/LoadManager/catkin_ws/build/activity_monitor/cmake_install.cmake")
+  INCLUDE("/home/squirrel/thesis/LoadManager/catkin_ws/build/load_manager/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)
 

@@ -6,3 +6,4 @@
 # testing this directory and lists subdirectories to be tested as well.
 SUBDIRS(gtest)
 SUBDIRS(activity_monitor)
+SUBDIRS(load_manager)

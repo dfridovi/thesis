@@ -5,20 +5,27 @@ Broadcast CPU utilization as a ROS topic.
 """
 
 import rospy
+import psutil
 from std_msgs.msg import String
+import os, sys
 
-def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+def cpu_util():
+
+    # set publisher, node name, and publishing rate
+    IP_ADDR = os.environ["ROS_IP"].replace(".", "_")
+    pub = rospy.Publisher("cpu_util/" + IP_ADDR, String, queue_size=10)
+    rospy.init_node('activity_monitor', anonymous=True)
+    rate = rospy.Rate(1) # 1 hz
+
+    # continuously publish
     while not rospy.is_shutdown():
-        hello_str = "hello world %s" % rospy.get_time()
-        rospy.loginfo(hello_str)
-        pub.publish(hello_str)
+        data = str(psutil.cpu_percent())
+        rospy.loginfo(data)
+        pub.publish(data)
         rate.sleep()
 
 if __name__ == '__main__':
     try:
-        talker()
+        cpu_util()
     except rospy.ROSInterruptException:
         pass

@@ -362,6 +362,21 @@ clean: activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Directory level rules for directory load_manager
+
+# Convenience name for "all" pass in the directory.
+load_manager/all:
+.PHONY : load_manager/all
+
+# Convenience name for "clean" pass in the directory.
+load_manager/clean:
+.PHONY : load_manager/clean
+
+# Convenience name for "preinstall" pass in the directory.
+load_manager/preinstall:
+.PHONY : load_manager/preinstall
+
+#=============================================================================
 # Special targets to cleanup operation of make.
 
 # Special rule to run CMake to check the build system integrity.
