@@ -2,8 +2,6 @@
 Implements an exponential filter.
 """
 
-from collections import deque
-
 class FilterCPU:
     
     # constructor
@@ -13,7 +11,7 @@ class FilterCPU:
         tap = weighting of prior filter value
         """
 
-        self.X = float(X)
+        self.X = float(_X)
         self.tap = _tap
 
     # process next position
@@ -22,5 +20,5 @@ class FilterCPU:
         self.X = self.tap * self.X + (1 - self.tap) * cpu
 
     # return current position
-    def position(self):
+    def output(self):
         return self.X

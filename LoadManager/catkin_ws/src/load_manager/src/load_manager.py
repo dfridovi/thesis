@@ -7,18 +7,21 @@ Load manager package.
 import psutil, subprocess
 import rospy
 from std_msgs.msg import String
-import time, sys, os
+import time, sys, os, functools
 
-#from filterCPU import FilterCPU
+from filterCPU import FilterCPU
 
 # set up shells
 (RPI_USR, RPI_IP) = ("pi", "10.8.244.74")
 SQUIRREL = "squirrel"
 ASDF = "asdf"
 
+# machine IP addresses
 IP_SQUIRREL = "10_9_160_238"
 IP_ASDF = "10_8_190_94"
+MACHINES = [IP_SQUIRREL] #, IP_ASDF]
 
+# empty dictionary to store load data
 load_data = {}
 
 def openSSH(usr, ip):
@@ -69,21 +72,27 @@ def mapping():
     maplaunch = openSSH(ASDF, ASDF)
     maplaunch.stdin.write(MAP_LAUNCH + "\n")
 
-def callback(data):
-    print data.data
-    rospy.loginfo(rospy.get_caller_id() + " I heard %s" % data)
+def genericCallback(data, machine):
+    load_data[machine].update(float(data.data))
+    rospy.loginfo("Logged data from " + machine + ": " + str(load_data[machine].output()))
 
-def main():
-#    load_data[SQUIRREL] = FilterCPU()
-#    load_data[ASDF] = FilterCPU()
-
-    rospy.Subscriber("cpu_util/" + IP_SQUIRREL, String, callback)
-    rospy.Subscriber("cpu_util/" + IP_ASDF, String, callback)
-    rospy.spin()
-
+# main script
 if __name__ == "__main__":
     try:
         rospy.init_node("load_manager", anonymous=True)
-        main()
+
+        for machine in MACHINES:
+
+            # initialize to empty filter
+            load_data[machine] = FilterCPU(0.999)
+            
+            # generate a callback function
+            callback = functools.partial(genericCallback, machine=machine)
+
+            # subscribe
+            rospy.Subscriber("cpu_util/" + machine, String, callback) 
+
+        rospy.spin()
+
     except rospy.ROSInterruptException:
         pass
