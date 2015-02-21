@@ -74,7 +74,7 @@ def mapping():
 
 def genericCallback(data, machine):
     load_data[machine].update(float(data.data))
-    rospy.loginfo("Logged data from " + machine + ": " + str(load_data[machine].output()))
+    rospy.loginfo("Logged data from " + machine + ": " + str((load_data[machine].output(), float(data.data))))
 
 # main script
 if __name__ == "__main__":
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         for machine in MACHINES:
 
             # initialize to empty filter
-            load_data[machine] = FilterCPU(0.999)
+            load_data[machine] = FilterCPU(_tap=0.99)
             
             # generate a callback function
             callback = functools.partial(genericCallback, machine=machine)
