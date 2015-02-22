@@ -34,6 +34,9 @@ ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py"
 # other parameters
 FILTER_TAP = 0.99
 WAIT_TIME = 5
+UPDATE_INTERVAL = 1
+CPU_LO = 20.0
+CPU_HI = 50.0
 
 # store load data, commands, and launched processes
 load_data = {}
@@ -43,7 +46,10 @@ process_queue = deque()
 def init()
     ssh = executeCommand({"usr" = SQUIRREL, "ip" = SQUIRREL,
                           "command" = ROSCORE})
-    process_queue.append(ssh)
+    process_queue.append("command" = ROSCORE,
+                         "usr" = SQUIRREL, 
+                         "ip" = SQUIRREL,
+                         "process" = ssh})
 
 def openSSH(usr, ip):
    
@@ -65,11 +71,44 @@ def monitorCPUs():
     for machine in SHELL_MACHINES:
         ssh = executeCommand({"usr" = machine, "ip" = machine
                               "command" = ACTIVITY_LAUNCH})
-        process_queue.append(ssh)
+        process_queue.append({"command" = ACTIVITY_LAUNCH,
+                              "usr" = machine,
+                              "ip" = machine,
+                              "process" = ssh})
 
+def isIdle(machine):
+    """
+    Bang-bang control loop to avoid hysteresis. Set high and low
+    thresholds of CPU activity and change load_data's "isIdle"
+    parameter accordingly.
+    """
+    
+    cpu = load_data[machine]["activity"].output()
+    idle = load_data[machine]["isIdle"]
+ 
+    if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
+        return not idle
+    else:
+        return idle
+        
 
 def launchTasks():
-    
+    """
+    Set up a polling loop. On each tic:
+    1) Check process_queue and see if there are any processes
+       running on non-idle machines. Kill those processes and add
+       them back to the command_queue.
+    2) Check command_queue and launch any pending commands.
+    """
+
+    while True:
+        
+        # check process_queue
+        for task in process_queue:
+            process = task["process"]
+            
+
+        time.sleep(UPDATE_INTERVAL)
 
 def navigationSetup():
     
@@ -87,13 +126,18 @@ def mappingSetup():
     command_queue.append({"usr" = ASDF, "ip" = ASDF,
                           "command" = MAPPING_LAUNCH})
 
-def genericCallback(data, machine):
-    load_data[machine].update(float(data.data))
-    rospy.loginfo("Logged data from " + machine + ": " + 
-                  str((load_data[machine].output(), float(data.data))))
+def genericCPUCallback(data, machine):
+    load_data[machine]["activity"].update(float(data.data))
+    load_data[machine]["isIdle"] = isIdle(machine)
+    rospy.loginfo((machine + " idle? " + str(load_data[machine]["isIdle"]) + 
+                   ": " + str((load_data[machine].output(), float(data.data)))))
+
+def onTerminateCallback(process):
+    print("Process {} terminated".format(process))
 
 # main script
 if __name__ == "__main__":
+
     try:
 
         # launch roscore
@@ -106,10 +150,11 @@ if __name__ == "__main__":
         for machine in IP_MACHINES:
 
             # initialize to empty filter
-            load_data[machine] = FilterCPU(_tap=0.99)
+            load_data[machine] = ({"activity" = FilterCPU(_tap=0.99),
+                                   "isIdle" = False})
             
             # generate a callback function
-            callback = functools.partial(genericCallback, machine=machine)
+            callback = functools.partial(genericCPUCallback, machine=machine)
 
             # subscribe
             rospy.Subscriber("cpu_util/" + machine, String, callback) 
@@ -118,7 +163,20 @@ if __name__ == "__main__":
         navigationSetup()
         launchTasks()
 
-        rospy.spin()
-
     except rospy.ROSInterruptException:
         pass
+
+    except KeyboardInterrupt:
+        print "Terminating all processes cleanly."
+        process_list = []
+        
+        # gently terminate all processes on the process_queue
+        for task in process_queue:
+            process = task["process"]
+            process_list.append(process)
+            process.terminate()
+        dead, alive = psutil.wait_procs(process_list, timeout=5, callback=onTerminateCallback)
+
+        # forceably kill all remaining processes
+        for process in alive:
+            process.kill()
