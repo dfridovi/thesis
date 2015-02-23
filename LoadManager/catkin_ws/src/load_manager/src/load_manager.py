@@ -128,6 +128,8 @@ def launchTasks():
        running on non-idle machines. Kill those processes and add
        them back to the command_queue.
     2) Check command_queue and launch any pending commands.
+    IDEA:
+    3) Kill all marked processes.
     """
 
     while True:
