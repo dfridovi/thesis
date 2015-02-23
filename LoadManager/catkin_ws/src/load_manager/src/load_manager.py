@@ -12,16 +12,14 @@ from collections import deque
 
 import time, sys, os, functools
 
-# set up shells
-(RPI_USR, RPI_IP) = ("pi", "10.8.244.74")
-SQUIRREL = "squirrel"
-ASDF = "asdf"
-SHELL_MACHINES = [SQUIRREL] #, ASDF]
-
-# machine IP addresses
-IP_SQUIRREL = "10_9_160_238"
-IP_ASDF = "10_8_190_94"
-IP_MACHINES = [IP_SQUIRREL] #, IP_ASDF]
+# set up machines
+SQUIRREL = {"usr" = "squirrel",
+            "ip"  = "squirrel",
+            "id"  = "10_9_160_238"}
+ASDF = {"usr" = "asdf",
+        "ip"  = "asdf",
+        "id"  = "10_8_190_94"}
+MACHINES = [SQUIRREL, ASDF]
 
 # commands
 ROSCORE = "roscore\n"
@@ -43,38 +41,41 @@ load_data = {}
 command_queue = deque()
 process_queue = deque()
 
-def init()
-    ssh = executeCommand({"usr" = SQUIRREL, "ip" = SQUIRREL,
+def init():
+    """ Launch roscore on SQUIRREL. """
+
+    ssh = executeCommand({"machine" = SQUIRREL,
                           "command" = ROSCORE})
     process_queue.append("command" = ROSCORE,
-                         "usr" = SQUIRREL, 
-                         "ip" = SQUIRREL,
-                         "process" = ssh})
+                         "machine" = SQUIRREL,
+                         "process" = ssh,
+                         "isMovable" = False})
 
 def openSSH(usr, ip):
-   
+    """ Open an SSH connection to the specified machine. """
+
     SSH = ["ssh", "-t", "-t", usr + "@" + ip]
     ssh = psutil.Popen(SSH, stdin=subprocess.PIPE)
     return ssh
 
 def executeCommand(command):
-    ssh = openSSH(command["usr"], command["ip"])
+    """ Execute a command on the specified machine. """
+
+    ssh = openSSH(command["machine"]["usr"], command["machine"]["ip"])
     ssh.stdin.write(command["command"])
     time.sleep(WAIT_TIME)
     return ssh
 
 def monitorCPUs():
-    """
-    Launch cpu monitoring node on all machines.
-    """
+    """ Launch CPU monitoring node on all machines. """
 
-    for machine in SHELL_MACHINES:
-        ssh = executeCommand({"usr" = machine, "ip" = machine
+    for machine in MACHINES:
+        ssh = executeCommand({"machine" = machine,
                               "command" = ACTIVITY_LAUNCH})
         process_queue.append({"command" = ACTIVITY_LAUNCH,
-                              "usr" = machine,
-                              "ip" = machine,
-                              "process" = ssh})
+                              "machine" = machine,
+                              "process" = ssh,
+                              "isMovable" = False})
 
 def isIdle(machine):
     """
@@ -91,6 +92,34 @@ def isIdle(machine):
     else:
         return idle
         
+def findIdleMachine():
+    """
+    Return (the most) idle machine.
+
+    As implemented, this method simply returns the machine in
+    MACHINES that is currently idle, with the lowest CPU
+    utilization.
+    """
+
+    lowest_cpu = float("inf")
+    most_idle = None
+    for machine in MACHINES:
+        
+        # check if idle
+        if load_manager[machine]["isIdle"]:
+            
+            # check if lowest CPU utilization so far
+            activity = load_manager[machine]["activity"].output()
+            if activity < lowest_cpu:
+                lowest_cpu = activity
+                most_idle = machine
+
+    # return None if no idle machines
+    if not most_idle:
+        return None
+
+    else:
+        return most_idle
 
 def launchTasks():
     """
@@ -105,34 +134,82 @@ def launchTasks():
         
         # check process_queue
         for task in process_queue:
-            process = task["process"]
             
+            # check if movable
+            if task["isMovable"]:
+                
+                # check if machine is not idle anymore and remove
+                machine = task["machine"]
+                if not load_data[machine]["isIdle"]:
 
+                    # find (the most) idle machine
+                    idle_machine = findIdleMachine()
+
+                    # only move the process if there is an idle machine on the network
+                    if not idle_machine:
+                        command_queue.append({"command" = task["command"],
+                                              "machine" = idle_machine})
+
+                        # terminate and remove
+                        task["process"].terminate() # don't bother waiting
+                        process_queue.remove(task)
+
+        # now check command_queue
+        while len(command_queue) > 0:
+            command = command_queue.popleft()            
+            executeCommand(command)
+            
+        # tic
         time.sleep(UPDATE_INTERVAL)
 
 def navigationSetup():
+    """
+    Add the requisite commands for autonomous navigation
+    to the command queue.
+    """
     
-    command_queue.append({"usr" = ASDF, "ip" = ASDF,
+    command_queue.append({"machine" = ASDF,
                           "command" = MIN_LAUNCH})
-    command_queue.append({"usr" = ASDF, "ip" = ASDF,
+    command_queue.append({"machine" = ASDF,
                           "command" = SENSE_LAUNCH})
-    command_queue.append({"usr" = SQUIRREL, "ip" = SQUIRREL,
+    command_queue.append({"machine" = SQUIRREL,
                           "command" = AMCL_LAUNCH})
     
 def mappingSetup():
+    """
+    Add the requisite commands for mapping to the command queue.
 
-    command_queue.append({"usr" = ASDF, "ip" = ASDF,
+    Note that this will not start keyboard_teleop, since that
+    requires additional user interaction (which is outside the scope
+    of this module). That command may be launched on ASDF as follows:
+    $ roslaunch turtlebot_teleop keyboard_teleop.launch
+
+    Similarly, this does not start RViz. You may do so manually:
+    $ roslaunch turtlebot_rviz_launchers view_navigation.launch
+    """
+
+    command_queue.append({"machine" = ASDF,
                           "command" = MIN_LAUNCH})
-    command_queue.append({"usr" = ASDF, "ip" = ASDF,
+    command_queue.append({"machine" = ASDF,
                           "command" = MAPPING_LAUNCH})
 
 def genericCPUCallback(data, machine):
+    """
+    Generic callback function for handling CPU utilization data.
+
+    This function is extendable to future implementations of the 
+    activity_monitor package, which may include data other than 
+    simple CPU utilization percentage.
+    """
+
     load_data[machine]["activity"].update(float(data.data))
     load_data[machine]["isIdle"] = isIdle(machine)
-    rospy.loginfo((machine + " idle? " + str(load_data[machine]["isIdle"]) + 
+    rospy.loginfo((machine["id"] + " idle? " + str(load_data[machine]["isIdle"]) + 
                    ": " + str((load_data[machine].output(), float(data.data)))))
 
 def onTerminateCallback(process):
+    """ Callback function for process termination. """
+
     print("Process {} terminated".format(process))
 
 # main script
@@ -147,7 +224,7 @@ if __name__ == "__main__":
         rospy.init_node("load_manager", anonymous=True)
         monitorCPUs()
 
-        for machine in IP_MACHINES:
+        for machine in MACHINES:
 
             # initialize to empty filter
             load_data[machine] = ({"activity" = FilterCPU(_tap=0.99),
