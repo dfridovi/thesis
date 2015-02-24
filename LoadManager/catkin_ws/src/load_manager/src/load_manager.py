@@ -13,13 +13,13 @@ from collections import deque
 import time, sys, os, functools
 
 # set up machines
-SQUIRREL = {"usr" = "squirrel",
-            "ip"  = "squirrel",
-            "id"  = "10_9_160_238"}
-ASDF = {"usr" = "asdf",
-        "ip"  = "asdf",
-        "id"  = "10_8_190_94"}
-MACHINES = [SQUIRREL, ASDF]
+SQUIRREL = {"usr" : "squirrel",
+            "ip"  : "squirrel",
+            "id"  : "10_9_160_238"}
+ASDF = {"usr" : "asdf",
+        "ip"  : "asdf",
+        "id"  : "10_8_190_94"}
+MACHINES = [SQUIRREL] #, ASDF]
 
 # commands
 ROSCORE = "roscore\n"
@@ -44,12 +44,12 @@ process_queue = deque()
 def init():
     """ Launch roscore on SQUIRREL. """
 
-    ssh = executeCommand({"machine" = SQUIRREL,
-                          "command" = ROSCORE})
-    process_queue.append("command" = ROSCORE,
-                         "machine" = SQUIRREL,
-                         "process" = ssh,
-                         "isMovable" = False})
+    ssh = executeCommand({"machine" : SQUIRREL,
+                          "command" : ROSCORE})
+    process_queue.append({"command" : ROSCORE,
+                          "machine" : SQUIRREL,
+                          "process" : ssh,
+                          "isMovable" : False})
 
 def openSSH(usr, ip):
     """ Open an SSH connection to the specified machine. """
@@ -70,12 +70,12 @@ def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
 
     for machine in MACHINES:
-        ssh = executeCommand({"machine" = machine,
-                              "command" = ACTIVITY_LAUNCH})
-        process_queue.append({"command" = ACTIVITY_LAUNCH,
-                              "machine" = machine,
-                              "process" = ssh,
-                              "isMovable" = False})
+        ssh = executeCommand({"machine" : machine,
+                              "command" : ACTIVITY_LAUNCH})
+        process_queue.append({"command" : ACTIVITY_LAUNCH,
+                              "machine" : machine,
+                              "process" : ssh,
+                              "isMovable" : False})
 
 def isIdle(machine):
     """
@@ -125,15 +125,17 @@ def launchTasks():
     """
     Set up a polling loop. On each tic:
     1) Check process_queue and see if there are any processes
-       running on non-idle machines. Kill those processes and add
+       running on non-idle machines. Mark those processes and add
        them back to the command_queue.
     2) Check command_queue and launch any pending commands.
-    IDEA:
     3) Kill all marked processes.
     """
 
     while True:
-        
+
+        # keep a list of processes to be killed
+        marked_processes = []
+
         # check process_queue
         for task in process_queue:
             
@@ -149,17 +151,22 @@ def launchTasks():
 
                     # only move the process if there is an idle machine on the network
                     if not idle_machine:
-                        command_queue.append({"command" = task["command"],
-                                              "machine" = idle_machine})
+                        command_queue.append({"command" : task["command"],
+                                              "machine" : idle_machine})
 
-                        # terminate and remove
-                        task["process"].terminate() # don't bother waiting
+                        # mark and remove
+                        marked_processes.append(task)
                         process_queue.remove(task)
 
         # now check command_queue
         while len(command_queue) > 0:
             command = command_queue.popleft()            
             executeCommand(command)
+
+        # now kill all marked processes
+        for task in marked_processes:
+            task["process"].terminate() # don't bother waiting
+                        
             
         # tic
         time.sleep(UPDATE_INTERVAL)
@@ -170,12 +177,12 @@ def navigationSetup():
     to the command queue.
     """
     
-    command_queue.append({"machine" = ASDF,
-                          "command" = MIN_LAUNCH})
-    command_queue.append({"machine" = ASDF,
-                          "command" = SENSE_LAUNCH})
-    command_queue.append({"machine" = SQUIRREL,
-                          "command" = AMCL_LAUNCH})
+    command_queue.append({"machine" : ASDF,
+                          "command" : MIN_LAUNCH})
+    command_queue.append({"machine" : ASDF,
+                          "command" : SENSE_LAUNCH})
+    command_queue.append({"machine" : SQUIRREL,
+                          "command" : AMCL_LAUNCH})
     
 def mappingSetup():
     """
@@ -190,10 +197,10 @@ def mappingSetup():
     $ roslaunch turtlebot_rviz_launchers view_navigation.launch
     """
 
-    command_queue.append({"machine" = ASDF,
-                          "command" = MIN_LAUNCH})
-    command_queue.append({"machine" = ASDF,
-                          "command" = MAPPING_LAUNCH})
+    command_queue.append({"machine" : ASDF,
+                          "command" : MIN_LAUNCH})
+    command_queue.append({"machine" : ASDF,
+                          "command" : MAPPING_LAUNCH})
 
 def genericCPUCallback(data, machine):
     """
@@ -206,8 +213,9 @@ def genericCPUCallback(data, machine):
 
     load_data[machine]["activity"].update(float(data.data))
     load_data[machine]["isIdle"] = isIdle(machine)
-    rospy.loginfo((machine["id"] + " idle? " + str(load_data[machine]["isIdle"]) + 
-                   ": " + str((load_data[machine].output(), float(data.data)))))
+    rospy.loginfo((str(time.time()) + machine["id"] + " idle? " + 
+                   str(load_data[machine]["isIdle"]) + ": " + 
+                   str((load_data[machine].output(), float(data.data)))))
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """
@@ -229,8 +237,8 @@ if __name__ == "__main__":
         for machine in MACHINES:
 
             # initialize to empty filter
-            load_data[machine] = ({"activity" = FilterCPU(_tap=0.99),
-                                   "isIdle" = False})
+            load_data[machine] = ({"activity" : FilterCPU(_tap=0.99),
+                                   "isIdle" : False})
             
             # generate a callback function
             callback = functools.partial(genericCPUCallback, machine=machine)
