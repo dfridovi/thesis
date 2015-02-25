@@ -40,6 +40,7 @@ WAIT_TIME = 5
 UPDATE_INTERVAL = 1
 CPU_LO = 20.0
 CPU_HI = 50.0
+CATCH_NODES = True
 
 # store load data, commands, and launched processes
 load_data = {}
@@ -50,23 +51,30 @@ def init():
     """ Launch roscore on SQUIRREL. """
 
     ssh = executeCommand({"machine" : SQUIRREL,
-                          "command" : ROSCORE})
+                          "command" : ROSCORE,
+                          "catchOut" : False})
     process_queue.append({"command" : ROSCORE,
                           "machine" : SQUIRREL,
                           "process" : ssh,
                           "isMovable" : False})
 
-def openSSH(usr, ip):
+def openSSH(usr, ip, catch_output=False):
     """ Open an SSH connection to the specified machine. """
 
     SSH = ["ssh", "-t", "-t", usr + "@" + ip]
-    ssh = psutil.Popen(SSH, stdin=subprocess.PIPE)
+    if catch_output:
+        ssh = psutil.Popen(SSH, stdin=subprocess.PIPE,
+                           stdout=subprocess.PIPE)
+    else:
+        ssh = psutil.Popen(SSH, stdin=subprocess.PIPE)
     return ssh
 
 def executeCommand(command):
     """ Execute a command on the specified machine. """
 
-    ssh = openSSH(command["machine"]["usr"], command["machine"]["ip"])
+    ssh = openSSH(command["machine"]["usr"], 
+                  command["machine"]["ip"],
+                  command["catchOut"])
     ssh.stdin.write(command["command"])
     time.sleep(WAIT_TIME)
     return ssh
@@ -75,8 +83,9 @@ def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
 
     for machine_id in MACHINES.keys():
-        ssh = executeCommand({"machine" : MACHINES[machine_id],
-                              "command" : ACTIVITY_LAUNCH})
+        ssh = executeCommand({"machine"  : MACHINES[machine_id],
+                              "command"  : ACTIVITY_LAUNCH,
+                              "catchOut" : True})
         process_queue.append({"command" : ACTIVITY_LAUNCH,
                               "machine" : MACHINES[machine_id],
                               "process" : ssh,
@@ -183,11 +192,14 @@ def navigationSetup():
     """
     
     command_queue.append({"machine" : ASDF,
-                          "command" : MIN_LAUNCH})
+                          "command" : MIN_LAUNCH,
+                          "catchOut" : CATCH_NODES})
     command_queue.append({"machine" : ASDF,
-                          "command" : SENSE_LAUNCH})
+                          "command" : SENSE_LAUNCH,
+                          "catchOut" : CATCH_NODES})
     command_queue.append({"machine" : SQUIRREL,
-                          "command" : AMCL_LAUNCH})
+                          "command" : AMCL_LAUNCH,
+                          "catchOut" : CATCH_NODES})
     
 def mappingSetup():
     """
@@ -203,9 +215,11 @@ def mappingSetup():
     """
 
     command_queue.append({"machine" : ASDF,
-                          "command" : MIN_LAUNCH})
+                          "command" : MIN_LAUNCH,
+                          "catchOut" : CATCH_NODES})
     command_queue.append({"machine" : ASDF,
-                          "command" : MAPPING_LAUNCH})
+                          "command" : MAPPING_LAUNCH,
+                          "catchOut" : CATCH_NODES})
 
 def genericCPUCallback(data, machine_id):
     """
@@ -218,7 +232,8 @@ def genericCPUCallback(data, machine_id):
 
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
-    rospy.loginfo(machine_id["id"] + str((load_data[machine_id].output(), float(data.data))))
+    rospy.loginfo("CPU activity for " + machine_id + ": " + 
+                  str((load_data[machine_id]["activity"].output(), float(data.data))))
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """
@@ -250,13 +265,10 @@ if __name__ == "__main__":
             rospy.Subscriber("cpu_util/" + machine_id, String, callback) 
 
         # set up and launch all tasks
-        navigationSetup()
+#        navigationSetup()
         launchTasks()
 
     except rospy.ROSInterruptException:
-        pass
-
-    except KeyboardInterrupt:
         print "Terminating all processes cleanly."
         process_list = []
         
@@ -271,4 +283,8 @@ if __name__ == "__main__":
         for process in alive:
             process.kill()
             
+        sys.exit()
+
+    except KeyboardInterrupt:
+        print "KeyboardInterrupt detected."
         sys.exit()
