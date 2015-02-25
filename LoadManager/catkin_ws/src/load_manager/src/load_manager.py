@@ -23,8 +23,8 @@ ASDF = {"usr" : "asdf",
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
 
-MACHINES = {SQUIRREL_ID : SQUIRREL, 
-            ASDF_ID : ASDF}
+MACHINES = {SQUIRREL_ID : SQUIRREL} #, 
+#            ASDF_ID : ASDF}
 
 # commands
 ROSCORE = "roscore\n"
@@ -131,7 +131,6 @@ def findIdleMachine():
     # return None if no idle machines
     if not most_idle:
         return None
-
     else:
         return most_idle
 
@@ -252,17 +251,22 @@ if __name__ == "__main__":
         rospy.init_node("load_manager", anonymous=True)
         monitorCPUs()
 
+        # set up callbacks
+        callbacks = {}
         for machine_id in MACHINES.keys():
+            callbacks[machine_id] = functools.partial(genericCPUCallback, 
+                                                      machine_id=machine_id)
+
+        # set ROS subscribers
+        for machine_id in MACHINES.keys():
+            print machine_id
 
             # initialize to empty filter
-            load_data[machine_id] = ({"activity" : FilterCPU(_tap=0.99),
-                                      "isIdle" : False})
+            load_data[machine_id] = {"activity" : FilterCPU(_tap=0.99),
+                                     "isIdle" : False}
             
-            # generate a callback function
-            callback = functools.partial(genericCPUCallback, machine_id=machine_id)
-
             # subscribe
-            rospy.Subscriber("cpu_util/" + machine_id, String, callback) 
+            rospy.Subscriber("cpu_util/" + machine_id, String, callbacks[machine_id]) 
 
         # set up and launch all tasks
 #        navigationSetup()
