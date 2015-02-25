@@ -232,7 +232,6 @@ def genericCPUCallback(data, machine_id):
 
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
-    print "hi" + str(time.time())
     rospy.loginfo("CPU activity for " + machine_id + ": " + 
                   str((load_data[machine_id]["activity"].output(), float(data.data))))
 
@@ -261,7 +260,6 @@ if __name__ == "__main__":
 
         # set ROS subscriptions
         for machine_id in MACHINES.keys():
-            print machine_id
 
             # initialize to empty filter
             load_data[machine_id] = {"activity" : FilterCPU(_tap=0.99),
@@ -275,6 +273,10 @@ if __name__ == "__main__":
         launchTasks()
 
     except rospy.ROSInterruptException:
+        pass
+
+    except KeyboardInterrupt:
+        print "KeyboardInterrupt detected."
         print "Terminating all processes cleanly."
         process_list = []
         
@@ -289,8 +291,4 @@ if __name__ == "__main__":
         for process in alive:
             process.kill()
             
-        sys.exit()
-
-    except KeyboardInterrupt:
-        print "KeyboardInterrupt detected."
         sys.exit()
