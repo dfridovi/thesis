@@ -13,13 +13,18 @@ from collections import deque
 import time, sys, os, functools
 
 # set up machines
-SQUIRREL = {"usr" : "squirrel",
-            "ip"  : "squirrel",
-            "id"  : "10_9_160_238"}
-ASDF = {"usr" : "asdf",
-        "ip"  : "asdf",
-        "id"  : "10_8_190_94"}
-MACHINES = [SQUIRREL] #, ASDF]
+SQUIRREL_ID = "10_9_160_238"
+ASDF_ID = "10_8_190_94"
+
+SQUIRREL = {"usr" : "squirrel", 
+            "ip"  : "squirrel", 
+            "id"  : SQUIRREL_ID}
+ASDF = {"usr" : "asdf", 
+        "ip"  : "asdf", 
+        "id"  : ASDF_ID}
+
+MACHINES = {SQUIRREL_ID : SQUIRREL, 
+            ASDF_ID : ASDF}
 
 # commands
 ROSCORE = "roscore\n"
@@ -27,7 +32,7 @@ MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch\n"
 SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch\n"
 AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/ee_lab_big.yaml\n"
 MAPPING_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch\n"
-ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py"
+ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
 
 # other parameters
 FILTER_TAP = 0.99
@@ -69,23 +74,23 @@ def executeCommand(command):
 def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
 
-    for machine in MACHINES:
-        ssh = executeCommand({"machine" : machine,
+    for machine_id in MACHINES.keys():
+        ssh = executeCommand({"machine" : MACHINES[machine_id],
                               "command" : ACTIVITY_LAUNCH})
         process_queue.append({"command" : ACTIVITY_LAUNCH,
-                              "machine" : machine,
+                              "machine" : MACHINES[machine_id],
                               "process" : ssh,
                               "isMovable" : False})
 
-def isIdle(machine):
+def isIdle(machine_id):
     """
     Bang-bang control loop to avoid hysteresis. Set high and low
     thresholds of CPU activity and change load_data's "isIdle"
     parameter accordingly.
     """
     
-    cpu = load_data[machine]["activity"].output()
-    idle = load_data[machine]["isIdle"]
+    cpu = load_data[machine_id]["activity"].output()
+    idle = load_data[machine_id]["isIdle"]
  
     if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
         return not idle
@@ -103,16 +108,16 @@ def findIdleMachine():
 
     lowest_cpu = float("inf")
     most_idle = None
-    for machine in MACHINES:
+    for machine_id in MACHINES.keys():
         
         # check if idle
-        if load_manager[machine]["isIdle"]:
+        if load_manager[machine_id]["isIdle"]:
             
             # check if lowest CPU utilization so far
-            activity = load_manager[machine]["activity"].output()
+            activity = load_manager[machine_id]["activity"].output()
             if activity < lowest_cpu:
                 lowest_cpu = activity
-                most_idle = machine
+                most_idle = MACHINES[machine_id]
 
     # return None if no idle machines
     if not most_idle:
@@ -144,7 +149,7 @@ def launchTasks():
                 
                 # check if machine is not idle anymore and remove
                 machine = task["machine"]
-                if not load_data[machine]["isIdle"]:
+                if not load_data[machine["id"]]["isIdle"]:
 
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
@@ -202,7 +207,7 @@ def mappingSetup():
     command_queue.append({"machine" : ASDF,
                           "command" : MAPPING_LAUNCH})
 
-def genericCPUCallback(data, machine):
+def genericCPUCallback(data, machine_id):
     """
     Generic callback function for handling CPU utilization data.
 
@@ -211,11 +216,9 @@ def genericCPUCallback(data, machine):
     simple CPU utilization percentage.
     """
 
-    load_data[machine]["activity"].update(float(data.data))
-    load_data[machine]["isIdle"] = isIdle(machine)
-    rospy.loginfo((str(time.time()) + machine["id"] + " idle? " + 
-                   str(load_data[machine]["isIdle"]) + ": " + 
-                   str((load_data[machine].output(), float(data.data)))))
+    load_data[machine_id]["activity"].update(float(data.data))
+    load_data[machine_id]["isIdle"] = isIdle(machine_id)
+    rospy.loginfo(machine_id["id"] + str((load_data[machine_id].output(), float(data.data))))
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """
@@ -234,17 +237,17 @@ if __name__ == "__main__":
         rospy.init_node("load_manager", anonymous=True)
         monitorCPUs()
 
-        for machine in MACHINES:
+        for machine_id in MACHINES.keys():
 
             # initialize to empty filter
-            load_data[machine] = ({"activity" : FilterCPU(_tap=0.99),
-                                   "isIdle" : False})
+            load_data[machine_id] = ({"activity" : FilterCPU(_tap=0.99),
+                                      "isIdle" : False})
             
             # generate a callback function
-            callback = functools.partial(genericCPUCallback, machine=machine)
+            callback = functools.partial(genericCPUCallback, machine_id=machine_id)
 
             # subscribe
-            rospy.Subscriber("cpu_util/" + machine, String, callback) 
+            rospy.Subscriber("cpu_util/" + machine_id, String, callback) 
 
         # set up and launch all tasks
         navigationSetup()
@@ -267,3 +270,5 @@ if __name__ == "__main__":
         # forceably kill all remaining processes
         for process in alive:
             process.kill()
+            
+        sys.exit()
