@@ -15,6 +15,7 @@ import time, sys, os, functools
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
+RPI_ID = "10_8_244_74"
 
 SQUIRREL = {"usr" : "squirrel", 
             "ip"  : "squirrel", 
@@ -22,9 +23,12 @@ SQUIRREL = {"usr" : "squirrel",
 ASDF = {"usr" : "asdf", 
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
+RPI = {"usr" : "pi",
+       "ip"  : "10.8.244.74",
+       "id"  : RPI_ID}
 
 MACHINES = {ASDF_ID : ASDF,
-            SQUIRREL_ID : SQUIRREL} 
+            RPI_ID  : RPI} # SQUIRREL_ID : SQUIRREL} 
             
 
 # commands
@@ -181,7 +185,6 @@ def launchTasks():
         for task in marked_processes:
             task["process"].terminate() # don't bother waiting
                         
-            
         # tic
         time.sleep(UPDATE_INTERVAL)
 
@@ -270,7 +273,8 @@ if __name__ == "__main__":
 
         # set up and launch all tasks
 #        navigationSetup()
-        launchTasks()
+#        launchTasks()
+        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass
