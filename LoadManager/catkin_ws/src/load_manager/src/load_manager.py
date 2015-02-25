@@ -231,6 +231,7 @@ def genericCPUCallback(data, machine_id):
 
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
+    print "hi" + str(time.time())
     rospy.loginfo("CPU activity for " + machine_id + ": " + 
                   str((load_data[machine_id]["activity"].output(), float(data.data))))
 
@@ -257,7 +258,7 @@ if __name__ == "__main__":
             callbacks[machine_id] = functools.partial(genericCPUCallback, 
                                                       machine_id=machine_id)
 
-        # set ROS subscribers
+        # set ROS subscriptions
         for machine_id in MACHINES.keys():
             print machine_id
 
