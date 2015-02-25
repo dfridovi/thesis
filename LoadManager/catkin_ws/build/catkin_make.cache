@@ -1,2 +1,1 @@
 activity_monitor:load_manager
--DCATKIN_DEVEL_PREFIX=/home/pi/thesis/LoadManager/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/pi/thesis/LoadManager/catkin_ws/install
