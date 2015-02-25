@@ -23,7 +23,7 @@ ASDF = {"usr" : "asdf",
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
 
-MACHINES = {ASDF_ID : ASDF} #{SQUIRREL_ID : SQUIRREL} 
+MACHINES = {SQUIRREL_ID : SQUIRREL} 
             
 
 # commands
