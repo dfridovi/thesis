@@ -246,11 +246,11 @@ if __name__ == "__main__":
     try:
 
         # launch roscore
-        init()
+#        init()
 
         # set up CPU monitoring
         rospy.init_node("load_manager", anonymous=True)
-        monitorCPUs()
+#        monitorCPUs()
 
         # set up callbacks
         callbacks = {}
