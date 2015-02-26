@@ -15,7 +15,7 @@ import time, sys, os, functools
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
-RPI_ID = "10_8_244_74"
+RPI_ID = "10_9_191_80"
 
 SQUIRREL = {"usr" : "squirrel", 
             "ip"  : "squirrel", 
@@ -24,11 +24,11 @@ ASDF = {"usr" : "asdf",
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
 RPI = {"usr" : "pi",
-       "ip"  : "10.8.244.74",
+       "ip"  : "10.9.191.80",
        "id"  : RPI_ID}
 
 MACHINES = {ASDF_ID : ASDF,
-            RPI_ID  : RPI} # SQUIRREL_ID : SQUIRREL} 
+            SQUIRREL_ID : SQUIRREL} 
             
 
 # commands
@@ -90,7 +90,7 @@ def monitorCPUs():
     for machine_id in MACHINES.keys():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
-                              "catchOut" : True})
+                              "catchOut" : False})
         process_queue.append({"command" : ACTIVITY_LAUNCH,
                               "machine" : MACHINES[machine_id],
                               "process" : ssh,
@@ -249,11 +249,11 @@ if __name__ == "__main__":
     try:
 
         # launch roscore
-#        init()
+        init()
 
         # set up CPU monitoring
         rospy.init_node("load_manager", anonymous=True)
-#        monitorCPUs()
+        monitorCPUs()
 
         # set up callbacks
         callbacks = {}
