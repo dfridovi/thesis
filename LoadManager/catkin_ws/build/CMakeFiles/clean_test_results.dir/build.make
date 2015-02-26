@@ -31,11 +31,17 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
+# Escaping for special characters.
+EQUALS = =
+
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/ccmake
+
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/squirrel/thesis/LoadManager/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/pi/thesis/LoadManager/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/squirrel/thesis/LoadManager/catkin_ws/build
+CMAKE_BINARY_DIR = /home/pi/thesis/LoadManager/catkin_ws/build
 
 # Utility rule file for clean_test_results.
 
@@ -43,7 +49,7 @@ CMAKE_BINARY_DIR = /home/squirrel/thesis/LoadManager/catkin_ws/build
 include CMakeFiles/clean_test_results.dir/progress.make
 
 CMakeFiles/clean_test_results:
-	/usr/bin/cmake -E remove_directory /home/squirrel/thesis/LoadManager/catkin_ws/build/test_results
+	/usr/bin/cmake -E remove_directory /home/pi/thesis/LoadManager/catkin_ws/build/test_results
 
 clean_test_results: CMakeFiles/clean_test_results
 clean_test_results: CMakeFiles/clean_test_results.dir/build.make
@@ -58,6 +64,6 @@ CMakeFiles/clean_test_results.dir/clean:
 .PHONY : CMakeFiles/clean_test_results.dir/clean
 
 CMakeFiles/clean_test_results.dir/depend:
-	cd /home/squirrel/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/squirrel/thesis/LoadManager/catkin_ws/src /home/squirrel/thesis/LoadManager/catkin_ws/src /home/squirrel/thesis/LoadManager/catkin_ws/build /home/squirrel/thesis/LoadManager/catkin_ws/build /home/squirrel/thesis/LoadManager/catkin_ws/build/CMakeFiles/clean_test_results.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pi/thesis/LoadManager/catkin_ws/src /home/pi/thesis/LoadManager/catkin_ws/src /home/pi/thesis/LoadManager/catkin_ws/build /home/pi/thesis/LoadManager/catkin_ws/build /home/pi/thesis/LoadManager/catkin_ws/build/CMakeFiles/clean_test_results.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/clean_test_results.dir/depend
 

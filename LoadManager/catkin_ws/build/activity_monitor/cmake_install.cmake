@@ -1,8 +1,8 @@
-# Install script for directory: /home/squirrel/thesis/LoadManager/catkin_ws/src/activity_monitor
+# Install script for directory: /home/pi/thesis/LoadManager/catkin_ws/src/activity_monitor
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/squirrel/thesis/LoadManager/catkin_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/pi/thesis/LoadManager/catkin_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/squirrel/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitor.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitor.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/activity_monitor/cmake" TYPE FILE FILES
-    "/home/squirrel/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitorConfig.cmake"
-    "/home/squirrel/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitorConfig-version.cmake"
+    "/home/pi/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitorConfig.cmake"
+    "/home/pi/thesis/LoadManager/catkin_ws/build/activity_monitor/catkin_generated/installspace/activity_monitorConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/activity_monitor" TYPE FILE FILES "/home/squirrel/thesis/LoadManager/catkin_ws/src/activity_monitor/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/activity_monitor" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/src/activity_monitor/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
