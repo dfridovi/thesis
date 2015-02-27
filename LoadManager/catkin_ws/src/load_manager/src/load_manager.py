@@ -42,7 +42,7 @@ ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
 FILTER_TAP = 0.99
 WAIT_TIME = 5
 UPDATE_INTERVAL = 1
-CPU_LO = 20.0
+CPU_LO = 25.0
 CPU_HI = 50.0
 CATCH_NODES = True
 
@@ -143,50 +143,49 @@ def launchTasks():
     """
 
     while True:
-
+        
         # keep a list of processes to be killed
         marked_processes = []
-
+        
         # check process_queue
         for task in process_queue:
-            
+                
             # check if movable
             if task["isMovable"]:
                 
                 # check if machine is not idle anymore and remove
                 machine = task["machine"]
                 if not load_data[machine["id"]]["isIdle"]:
-
+                    
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
                     print "****************************[DEBUG]: " + str(idle_machine)
-                        
+                    
                     # only move the process if there is an idle machine on the network
                     if idle_machine is not None:
                         print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
 
                         # mark and remove later
                         marked_processes.append(task)
-
+                            
                         # change info
                         new_task = task.copy()
                         new_task["machine"] = idle_machine
                         new_task["process"] = None
                         command_queue.append(new_task)
                         print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
-
+                            
         # now check command_queue
         while len(command_queue) > 0:
             command = command_queue.popleft()
-            #print command
             executeCommand(command)
-
+            
         # now kill all marked processes
         for task in marked_processes:
             print "**********************Killing process: " + task["command"]
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
-                        
+            
         # print state of all processes
         printState()
 
@@ -261,17 +260,41 @@ def onTerminateCallback(process):
 
     print("Process {} terminated".format(process))
 
+def killAll():
+    """ Kill all running processes. """
+    
+    print "KeyboardInterrupt detected."
+    print "Terminating all processes cleanly."
+    process_list = []
+    
+    # gently terminate all processes on the process_queue
+    for task in process_queue:
+        process = task["process"]
+        process_list.append(process)
+        process.terminate()
+
+    # wait, then forceably kill all remaining processes
+    dead, alive = psutil.wait_procs(process_list, timeout=5, callback=onTerminateCallback)
+    for process in alive:
+        process.kill()
+
 # main script
 if __name__ == "__main__":
 
-    try:
+    while not rospy.is_shutdown():
+
+        # set shutdown callback
+#        rospy.on_shutdown(killAll())
 
         # launch roscore
+        print "got here"
         init()
 
         # set up CPU monitoring
         rospy.init_node("load_manager", anonymous=True)
+        print "got here"
         monitorCPUs()
+        
 
         # set up callbacks
         callbacks = {}
@@ -281,36 +304,19 @@ if __name__ == "__main__":
 
         # set ROS subscriptions
         for machine_id in MACHINES.keys():
-
+                
             # initialize to empty filter
             load_data[machine_id] = {"activity" : FilterCPU(_tap=0.99),
                                      "isIdle" : False}
-            
+        
             # subscribe
             rospy.Subscriber("cpu_util/" + machine_id, String, callbacks[machine_id]) 
-
+        
         # set up and launch all tasks
         navigationSetup()
         launchTasks()
-#        rospy.spin()
 
-    except rospy.ROSInterruptException:
-        pass
+    # die
+    killAll()
+    sys.exit()
 
-    except KeyboardInterrupt:
-        print "KeyboardInterrupt detected."
-        print "Terminating all processes cleanly."
-        process_list = []
-        
-        # gently terminate all processes on the process_queue
-        for task in process_queue:
-            process = task["process"]
-            process_list.append(process)
-            process.terminate()
-        dead, alive = psutil.wait_procs(process_list, timeout=5, callback=onTerminateCallback)
-
-        # forceably kill all remaining processes
-        for process in alive:
-            process.kill()
-            
-        sys.exit()
