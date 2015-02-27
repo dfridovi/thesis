@@ -125,10 +125,10 @@ def findIdleMachine():
     for machine_id in MACHINES.keys():
         
         # check if idle
-        if load_manager[machine_id]["isIdle"]:
+        if load_data[machine_id]["isIdle"]:
             
             # check if lowest CPU utilization so far
-            activity = load_manager[machine_id]["activity"].output()
+            activity = load_data[machine_id]["activity"].output()
             if activity < lowest_cpu:
                 lowest_cpu = activity
                 most_idle = MACHINES[machine_id]
@@ -179,14 +179,28 @@ def launchTasks():
         # now check command_queue
         while len(command_queue) > 0:
             command = command_queue.popleft()            
-            executeCommand(command)
+            ssh = executeCommand(command)
+            process_queue.append({"command" : command["command"],
+                                  "machine" : command["machine"],
+                                  "process" : ssh,
+                                  "isMovable" : True})
 
         # now kill all marked processes
         for task in marked_processes:
             task["process"].terminate() # don't bother waiting
                         
+        # print state of all processes
+        printState()
+
         # tic
         time.sleep(UPDATE_INTERVAL)
+
+def printState():
+    for task in process_queue:
+        print "Machine: " + task["machine"]["id"]
+        print "CPU %: " + str(load_data[task["machine"]["id"]]["activity"].output())
+        print "isIdle: " + str(load_data[task["machine"]["id"]]["isIdle"])
+        print "Command: " + task["command"]
 
 def navigationSetup():
     """
@@ -235,8 +249,8 @@ def genericCPUCallback(data, machine_id):
 
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
-    rospy.loginfo("CPU activity for " + machine_id + ": " + 
-                  str((load_data[machine_id]["activity"].output(), float(data.data))))
+#    rospy.loginfo("CPU activity for " + machine_id + ": " + 
+#                  str((load_data[machine_id]["activity"].output(), float(data.data))))
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """
@@ -272,9 +286,9 @@ if __name__ == "__main__":
             rospy.Subscriber("cpu_util/" + machine_id, String, callbacks[machine_id]) 
 
         # set up and launch all tasks
-#        navigationSetup()
-#        launchTasks()
-        rospy.spin()
+        navigationSetup()
+        launchTasks()
+#        rospy.spin()
 
     except rospy.ROSInterruptException:
         pass
