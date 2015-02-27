@@ -30,7 +30,6 @@ RPI = {"usr" : "pi",
 MACHINES = {ASDF_ID : ASDF,
             SQUIRREL_ID : SQUIRREL} 
             
-
 # commands
 ROSCORE = "roscore\n"
 MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch\n"
@@ -131,10 +130,7 @@ def findIdleMachine():
                 most_idle = MACHINES[machine_id]
 
     # return None if no idle machines
-    if not most_idle:
-        return None
-    else:
-        return most_idle
+    return most_idle
 
 def launchTasks():
     """
@@ -164,26 +160,30 @@ def launchTasks():
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
                     print "****************************[DEBUG]: " + str(idle_machine)
-
+                        
                     # only move the process if there is an idle machine on the network
-                    if not idle_machine:
+                    if idle_machine is not None:
+                        print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
 
-                        # mark and remove
+                        # mark and remove later
                         marked_processes.append(task)
 
                         # change info
-                        new_task = task
+                        new_task = task.copy()
                         new_task["machine"] = idle_machine
                         new_task["process"] = None
                         command_queue.append(new_task)
+                        print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
 
         # now check command_queue
         while len(command_queue) > 0:
-            command = command_queue.popleft()            
-            ssh = executeCommand(command)
+            command = command_queue.popleft()
+            #print command
+            executeCommand(command)
 
         # now kill all marked processes
         for task in marked_processes:
+            print "**********************Killing process: " + task["command"]
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
                         
@@ -198,6 +198,7 @@ def printState():
         print "Machine: " + task["machine"]["id"]
         print "CPU %: " + str(load_data[task["machine"]["id"]]["activity"].output())
         print "isIdle: " + str(load_data[task["machine"]["id"]]["isIdle"])
+        print "isMovable: " + str(task["isMovable"])
         print "Command: " + task["command"]
 
 def navigationSetup():
