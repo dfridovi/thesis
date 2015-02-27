@@ -90,7 +90,7 @@ def monitorCPUs():
     for machine_id in MACHINES.keys():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
-                              "catchOut" : False})
+                              "catchOut" : True})
         process_queue.append({"command" : ACTIVITY_LAUNCH,
                               "machine" : MACHINES[machine_id],
                               "process" : ssh,
