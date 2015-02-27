@@ -54,13 +54,10 @@ process_queue = deque()
 
 def init():
     """ Launch roscore on SQUIRREL. """
-
+    
     ssh = executeCommand({"machine" : SQUIRREL,
                           "command" : ROSCORE,
-                          "catchOut" : False})
-    process_queue.append({"command" : ROSCORE,
-                          "machine" : SQUIRREL,
-                          "process" : ssh,
+                          "catchOut" : False,
                           "isMovable" : False})
 
 def openSSH(usr, ip, catch_output=False):
@@ -82,7 +79,9 @@ def executeCommand(command):
                   command["catchOut"])
     ssh.stdin.write(command["command"])
     time.sleep(WAIT_TIME)
-    return ssh
+
+    command["process"] = ssh
+    process_queue.append(command)
 
 def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
@@ -90,11 +89,9 @@ def monitorCPUs():
     for machine_id in MACHINES.keys():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
-                              "catchOut" : True})
-        process_queue.append({"command" : ACTIVITY_LAUNCH,
-                              "machine" : MACHINES[machine_id],
-                              "process" : ssh,
+                              "catchOut" : True, 
                               "isMovable" : False})
+
 
 def isIdle(machine_id):
     """
@@ -166,27 +163,28 @@ def launchTasks():
 
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
+                    print "****************************[DEBUG]: " + str(idle_machine)
 
                     # only move the process if there is an idle machine on the network
                     if not idle_machine:
-                        command_queue.append({"command" : task["command"],
-                                              "machine" : idle_machine})
 
                         # mark and remove
                         marked_processes.append(task)
-                        process_queue.remove(task)
+
+                        # change info
+                        new_task = task
+                        new_task["machine"] = idle_machine
+                        new_task["process"] = None
+                        command_queue.append(new_task)
 
         # now check command_queue
         while len(command_queue) > 0:
             command = command_queue.popleft()            
             ssh = executeCommand(command)
-            process_queue.append({"command" : command["command"],
-                                  "machine" : command["machine"],
-                                  "process" : ssh,
-                                  "isMovable" : True})
 
         # now kill all marked processes
         for task in marked_processes:
+            process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
                         
         # print state of all processes
@@ -210,13 +208,16 @@ def navigationSetup():
     
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
-                          "catchOut" : CATCH_NODES})
+                          "catchOut" : CATCH_NODES,
+                          "isMovable" : False})
     command_queue.append({"machine" : ASDF,
                           "command" : SENSE_LAUNCH,
-                          "catchOut" : CATCH_NODES})
-    command_queue.append({"machine" : SQUIRREL,
+                          "catchOut" : CATCH_NODES,
+                          "isMovable" : False})
+    command_queue.append({"machine" : ASDF, #SQUIRREL,
                           "command" : AMCL_LAUNCH,
-                          "catchOut" : CATCH_NODES})
+                          "catchOut" : CATCH_NODES,
+                          "isMovable" : True})
     
 def mappingSetup():
     """
@@ -233,10 +234,12 @@ def mappingSetup():
 
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
-                          "catchOut" : CATCH_NODES})
+                          "catchOut" : CATCH_NODES,
+                          "isMovable" : False})
     command_queue.append({"machine" : ASDF,
                           "command" : MAPPING_LAUNCH,
-                          "catchOut" : CATCH_NODES})
+                          "catchOut" : CATCH_NODES,
+                          "isMovable" : True})
 
 def genericCPUCallback(data, machine_id):
     """
