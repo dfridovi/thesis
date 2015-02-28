@@ -281,18 +281,13 @@ def killAll():
 # main script
 if __name__ == "__main__":
 
-    while not rospy.is_shutdown():
-
-        # set shutdown callback
-#        rospy.on_shutdown(killAll())
+    try:
 
         # launch roscore
-        print "got here"
         init()
 
         # set up CPU monitoring
-        rospy.init_node("load_manager", anonymous=True)
-        print "got here"
+        rospy.init_node("load_manager", anonymous=True, disable_signals=True)
         monitorCPUs()
         
 
@@ -316,7 +311,9 @@ if __name__ == "__main__":
         navigationSetup()
         launchTasks()
 
-    # die
-    killAll()
-    sys.exit()
+    except KeyboardInterrupt:
+      
+        # terminate all processes gently
+        killAll()
+        sys.exit()
 
