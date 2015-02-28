@@ -54,6 +54,7 @@ process_queue = deque()
 def init():
     """ Launch roscore on SQUIRREL. """
     
+    print "Launching roscore..."
     ssh = executeCommand({"machine" : SQUIRREL,
                           "command" : ROSCORE,
                           "catchOut" : False,
@@ -84,8 +85,9 @@ def executeCommand(command):
 
 def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
-
+    
     for machine_id in MACHINES.keys():
+        print "Launching CPU monitor code for machine: " + machine_id
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
                               "catchOut" : True, 
@@ -159,11 +161,9 @@ def launchTasks():
                     
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
-                    print "****************************[DEBUG]: " + str(idle_machine)
                     
                     # only move the process if there is an idle machine on the network
                     if idle_machine is not None:
-                        print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
 
                         # mark and remove later
                         marked_processes.append(task)
@@ -173,16 +173,18 @@ def launchTasks():
                         new_task["machine"] = idle_machine
                         new_task["process"] = None
                         command_queue.append(new_task)
-                        print "****************************[DEBUG]: len of command_queue = " + str(len(command_queue))
                             
         # now check command_queue
         while len(command_queue) > 0:
             command = command_queue.popleft()
+            print ("********************** Launching process on " + 
+                   command["machine"]["id"] + ": " + command["command"])
             executeCommand(command)
             
         # now kill all marked processes
         for task in marked_processes:
-            print "**********************Killing process: " + task["command"]
+            print ("********************** Killing process on " + 
+                   task["machine"]["id"] + ": " + task["command"])
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
             
@@ -190,6 +192,7 @@ def launchTasks():
         printState()
 
         # tic
+        print "--------------------------------------------------------------------------"
         time.sleep(UPDATE_INTERVAL)
 
 def printState():
