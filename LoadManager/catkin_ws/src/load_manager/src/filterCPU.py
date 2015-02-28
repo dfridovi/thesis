@@ -1,26 +1,27 @@
 """
-Implements an exponential filter.
+Implements an exponential filter. Step response = 1 - tap^n.
 """
 
 class FilterCPU:
     
     # constructor
-    def __init__(self, _tap=0.5):
+    def __init__(self, _X=None, _tap=0.5):
         """
-        X = current filter value
+        X = current filter value -- initialize to 0
         tap = weighting of prior filter value
         """
 
-        self.X = None
+        self.X = _X
         self.tap = _tap
 
     # process next position
     def update(self, cpu):
         cpu = float(cpu)
-        if not self.X: 
-            self.X = cpu
-        else:
+        if self.X is not None: 
             self.X = self.tap * self.X + (1 - self.tap) * cpu
+        else:
+            self.X = cpu
+
 
     # return current position
     def output(self):

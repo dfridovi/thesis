@@ -15,7 +15,7 @@ import time, sys, os, functools
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
-RPI_ID = "10_9_191_80"
+RPI_ID = "10_8_172_136"
 
 SQUIRREL = {"usr" : "squirrel", 
             "ip"  : "squirrel", 
@@ -24,7 +24,7 @@ ASDF = {"usr" : "asdf",
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
 RPI = {"usr" : "pi",
-       "ip"  : "10.9.191.80",
+       "ip"  : "10.8.172.136",
        "id"  : RPI_ID}
 
 MACHINES = {ASDF_ID : ASDF,
@@ -34,16 +34,17 @@ MACHINES = {ASDF_ID : ASDF,
 ROSCORE = "roscore\n"
 MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch\n"
 SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch\n"
-AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/ee_lab_big.yaml\n"
+AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/my_map.yaml\n"
 MAPPING_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch\n"
 ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
 
 # other parameters
-FILTER_TAP = 0.99
+FILTER_TAP = 0.995
+FILTER_INIT = 0.0
 WAIT_TIME = 5
 UPDATE_INTERVAL = 1
 CPU_LO = 25.0
-CPU_HI = 50.0
+CPU_HI = 95.0
 CATCH_NODES = True
 
 # store load data, commands, and launched processes
@@ -304,7 +305,7 @@ if __name__ == "__main__":
         for machine_id in MACHINES.keys():
                 
             # initialize to empty filter
-            load_data[machine_id] = {"activity" : FilterCPU(_tap=0.99),
+            load_data[machine_id] = {"activity" : FilterCPU(_X = FILTER_INIT, _tap=FILTER_TAP),
                                      "isIdle" : False}
         
             # subscribe
