@@ -39,7 +39,7 @@ def navigation():
     senselaunch.stdin.write(SENSE_LAUNCH + "\n")
     time.sleep(5)
 
-    amcllaunch = openSSH(SQUIRREL, SQUIRREL)
+    amcllaunch = openSSH(ASDF, ASDF)
     amcllaunch.stdin.write(AMCL_LAUNCH + "\n")
 
 def mapping():
@@ -71,8 +71,8 @@ def main():
     
 
     try:
-        mapping()
-#        navigation()
+#        mapping()
+        navigation()
 
         while True:
             time.sleep(1)
