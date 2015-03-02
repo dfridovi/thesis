@@ -25,7 +25,7 @@ def navigation():
     ROSCORE = "roscore"
     MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch"
     SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch"
-    AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/ee_lab_big.yaml"
+    AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/my_map.yaml"
 
     roscore = openSSH(SQUIRREL, SQUIRREL)
     roscore.stdin.write(ROSCORE + "\n")
@@ -71,8 +71,8 @@ def main():
     
 
     try:
-#        mapping()
-        navigation()
+        mapping()
+#        navigation()
 
         while True:
             time.sleep(1)
