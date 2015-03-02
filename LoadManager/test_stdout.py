@@ -10,7 +10,7 @@ if __name__ == "__main__":
         i = 0
         while True:
             print i
-            time.sleep(0.5)
+#            time.sleep(0.5)
             i = i + 1
 
     except KeyboardInterrupt:
