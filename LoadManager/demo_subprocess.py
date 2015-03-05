@@ -17,8 +17,9 @@ def openSSH(ip, usr):
     return ssh
 
 def navigation():
+    
     # set up shells
-    RPI = "pi@10.8.244.74"
+    PI = "pi@10.8.244.74"
     SQUIRREL = "squirrel"
     ASDF = "asdf"
 
