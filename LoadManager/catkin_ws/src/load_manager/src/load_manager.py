@@ -51,7 +51,7 @@ CATCH_NODES = True
 # store load data, system history, commands, and launched processes
 load_data = {}
 history = DataCollector()
-HIST_FILE = "./history_data.pkl"
+HIST_FILE = "~/thesis/LoadManager/data/history_data.pkl"
 
 command_queue = deque()
 process_queue = deque()
