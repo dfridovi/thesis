@@ -4,13 +4,14 @@
 Load manager package.
 """
 
+import time, sys, os, functools
 import psutil, subprocess
 import rospy
 from std_msgs.msg import String
-from filterCPU import FilterCPU
 from collections import deque
 
-import time, sys, os, functools
+from filterCPU import FilterCPU
+from dataCollector import DataCollector
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
@@ -47,8 +48,11 @@ CPU_LO = 25.0
 CPU_HI = 95.0
 CATCH_NODES = True
 
-# store load data, commands, and launched processes
+# store load data, system history, commands, and launched processes
 load_data = {}
+history = DataCollector()
+HIST_FILE = "./history_data.pkl"
+
 command_queue = deque()
 process_queue = deque()
 
@@ -79,10 +83,14 @@ def executeCommand(command):
                   command["machine"]["ip"],
                   command["catchOut"])
     ssh.stdin.write(command["command"])
-    time.sleep(WAIT_TIME)
+    
+    # log to history
+    history.updateProcess(machine["id"], command["command"])
 
+    # add to process_queue, then sleep
     command["process"] = ssh
     process_queue.append(command)
+    time.sleep(WAIT_TIME)
 
 def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
@@ -256,6 +264,8 @@ def genericCPUCallback(data, machine_id):
 
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
+
+    history.updateMachine(machine_id, load_data[machine_id]["activity"].output())
 #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
 #                  str((load_data[machine_id]["activity"].output(), float(data.data))))
 
@@ -267,7 +277,7 @@ def onTerminateCallback(process):
 def killAll():
     """ Kill all running processes. """
     
-    print "KeyboardInterrupt detected."
+    print "\nKeyboardInterrupt detected."
     print "Terminating all processes cleanly."
     process_list = []
     
@@ -282,6 +292,10 @@ def killAll():
     for process in alive:
         process.kill()
 
+    # save system history
+    print "\nSaving system history to file {}".format(HIST_FILE)
+    history.save(HIST_FILE)
+        
 # main script
 if __name__ == "__main__":
 
@@ -294,13 +308,11 @@ if __name__ == "__main__":
         rospy.init_node("load_manager", anonymous=True, disable_signals=True)
         monitorCPUs()
         
-
         # set up callbacks
         callbacks = {}
         for machine_id in MACHINES.keys():
             callbacks[machine_id] = functools.partial(genericCPUCallback, 
                                                       machine_id=machine_id)
-
         # set ROS subscriptions
         for machine_id in MACHINES.keys():
                 

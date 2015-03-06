@@ -3,7 +3,7 @@ A class to collect computer activity data and, when required, save it to disk.
 """
 
 import time
-import os
+import numpy as np
 import cPickle as pickle
 
 class DataCollector:
@@ -41,8 +41,18 @@ class DataCollector:
                                       "processes" = {process : stamp}}
 
     def save(self, filename):
-        """ Pickle to the specified file. """
+        """ 
+        Convert to numpy arrays and pickle to the specified file. 
+        """
+
+        # make a clone to preserve the original in case it's still needed
+        clone = self.activity.copy()
+
+        for machine in clone.keys():
+            data = clone[machine]
+            data["activity"] = np.array(data["activity"], dtype=np.float)
+            data["time"] = np.array(data["time"], dtype=np.float)
 
         out = open(filename, "wb")
-        pickle.dump(self.activity, out)
+        pickle.dump(clone, out)
         out.close()
