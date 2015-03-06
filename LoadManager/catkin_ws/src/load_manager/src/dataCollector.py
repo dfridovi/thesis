@@ -3,6 +3,8 @@ A class to collect computer activity data and, when required, save it to disk.
 """
 
 import time
+import os
+import cPickle as pickle
 
 class DataCollector:
     
@@ -33,6 +35,14 @@ class DataCollector:
                 self.activity[machine]["processes"][process] = stamp
             else:
                 self.activity[machine]["processes"] = {process : stamp}
+        else:
+            self.activity[machine] = {"activity" = [],
+                                      "time" = [],
+                                      "processes" = {process : stamp}}
 
+    def save(self, filename):
+        """ Pickle to the specified file. """
 
-
+        out = open(filename, "wb")
+        pickle.dump(self.activity, out)
+        out.close()
