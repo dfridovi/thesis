@@ -9,13 +9,13 @@ class DataCollector:
     def __init__(self):
         """ Initialize to empty. """
 
+        self.initTime = time.time()
         self.activity = {}
-        self.processTimes = {}
 
     def updateMachine(self, machine, cpu):
         """ Keep track of machine activity with time stamps. """
 
-        stamp = time.time()
+        stamp = time.time() - self.initTime
         cpu = float(cpu)
         if machine in self.activity.keys():
             self.activity[machine]["activity"].append(cpu)
@@ -27,5 +27,12 @@ class DataCollector:
     def updateProcess(self, machine, process):
         """ Record start time of a process as well as its host machine. """
 
-        stamp = time.time()
-        
+        stamp = time.time() - self.initTime
+        if machine in self.activity.keys():
+            if "processes" in self.activity[machine].keys():
+                self.activity[machine]["processes"][process] = stamp
+            else:
+                self.activity[machine]["processes"] = {process : stamp}
+
+
+
