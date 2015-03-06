@@ -36,9 +36,9 @@ class DataCollector:
             else:
                 self.activity[machine]["processes"] = {process : stamp}
         else:
-            self.activity[machine] = {"activity" = [],
-                                      "time" = [],
-                                      "processes" = {process : stamp}}
+            self.activity[machine] = {"activity" : [],
+                                      "time" : [],
+                                      "processes" : {process : stamp}}
 
     def save(self, filename):
         """ 
@@ -46,12 +46,13 @@ class DataCollector:
         """
 
         # make a clone to preserve the original in case it's still needed
-        clone = self.activity.copy()
+        clone = {}
 
-        for machine in clone.keys():
-            data = clone[machine]
+        for machine in self.activity.keys():
+            data = self.activity[machine].copy()
             data["activity"] = np.array(data["activity"], dtype=np.float)
             data["time"] = np.array(data["time"], dtype=np.float)
+            clone[machine] = data
 
         out = open(filename, "wb")
         pickle.dump(clone, out)

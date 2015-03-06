@@ -51,7 +51,7 @@ CATCH_NODES = True
 # store load data, system history, commands, and launched processes
 load_data = {}
 history = DataCollector()
-HIST_FILE = "~/thesis/LoadManager/data/history_data.pkl"
+HIST_FILE = "/home/ubuntu/thesis/LoadManager/data/history_data.pkl"
 
 command_queue = deque()
 process_queue = deque()
@@ -85,7 +85,7 @@ def executeCommand(command):
     ssh.stdin.write(command["command"])
     
     # log to history
-    history.updateProcess(machine["id"], command["command"])
+    history.updateProcess(command["machine"]["id"], command["command"])
 
     # add to process_queue, then sleep
     command["process"] = ssh
