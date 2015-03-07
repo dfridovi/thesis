@@ -15,7 +15,7 @@ def cpu_util():
     IP_ADDR = os.environ["ROS_IP"].replace(".", "_")
     pub = rospy.Publisher("cpu_util/" + IP_ADDR, String, queue_size=10)
     rospy.init_node('activity_monitor', anonymous=True)
-    rate = rospy.Rate(10) # 1 hz
+    rate = rospy.Rate(10) # 10 hz
 
     # continuously publish
     while not rospy.is_shutdown():
