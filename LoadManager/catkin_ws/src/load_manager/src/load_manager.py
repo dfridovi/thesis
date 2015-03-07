@@ -45,7 +45,7 @@ FILTER_INIT = 0.0
 WAIT_TIME = 5
 UPDATE_INTERVAL = 1
 CPU_LO = 25.0
-CPU_HI = 95.0
+CPU_HI = float("inf")
 CATCH_NODES = True
 
 # store load data, system history, commands, and launched processes
