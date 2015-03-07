@@ -35,7 +35,7 @@ MACHINES = {ASDF_ID : ASDF,
 ROSCORE = "roscore\n"
 MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch\n"
 SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch\n"
-AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/my_map.yaml\n"
+AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/home/asdf/thesis/ee_small.yaml\n"
 MAPPING_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch\n"
 ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
 
