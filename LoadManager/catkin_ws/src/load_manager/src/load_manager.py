@@ -14,9 +14,9 @@ from filterCPU import FilterCPU
 from dataCollector import DataCollector
 
 # set up machines
-SQUIRREL_ID = "10_9_160_238"
+SQUIRREL_ID = "128_112_49_207"
 ASDF_ID = "10_8_190_94"
-RPI_ID = "10_8_172_136"
+UBUNTU_ID = "10_9_39_144"
 
 SQUIRREL = {"usr" : "squirrel", 
             "ip"  : "squirrel", 
@@ -24,12 +24,12 @@ SQUIRREL = {"usr" : "squirrel",
 ASDF = {"usr" : "asdf", 
         "ip"  : "asdf", 
         "id"  : ASDF_ID}
-RPI = {"usr" : "pi",
-       "ip"  : "10.8.172.136",
-       "id"  : RPI_ID}
+UBUNTU = {"usr" : "ubuntu",
+          "ip"  : "ubuntu",
+          "id"  : UBUNTU_ID}
 
-MACHINES = {ASDF_ID : ASDF,
-            SQUIRREL_ID : SQUIRREL} 
+MACHINES = {SQUIRREL_ID : SQUIRREL, 
+            UBUNTU_ID : UBUNTU} 
             
 # commands
 ROSCORE = "roscore\n"
@@ -218,15 +218,15 @@ def navigationSetup():
     to the command queue.
     """
     
-    command_queue.append({"machine" : ASDF,
+    command_queue.append({"machine" : UBUNTU,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : False})
-    command_queue.append({"machine" : ASDF,
+    command_queue.append({"machine" : UBUNTU,
                           "command" : SENSE_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : False})
-    command_queue.append({"machine" : ASDF, #SQUIRREL,
+    command_queue.append({"machine" : UBUNTU, #SQUIRREL,
                           "command" : AMCL_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : True})
@@ -237,18 +237,18 @@ def mappingSetup():
 
     Note that this will not start keyboard_teleop, since that
     requires additional user interaction (which is outside the scope
-    of this module). That command may be launched on ASDF as follows:
+    of this module). That command may be launched on UBUNTU as follows:
     $ roslaunch turtlebot_teleop keyboard_teleop.launch
 
     Similarly, this does not start RViz. You may do so manually:
     $ roslaunch turtlebot_rviz_launchers view_navigation.launch
     """
 
-    command_queue.append({"machine" : ASDF,
+    command_queue.append({"machine" : UBUNTU,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : False})
-    command_queue.append({"machine" : ASDF,
+    command_queue.append({"machine" : UBUNTU,
                           "command" : MAPPING_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : True})
