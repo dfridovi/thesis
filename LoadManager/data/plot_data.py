@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cPickle as pickle
 
-DATA_FILE = "./history_data.pkl"
+DATA_FILE = "./history_data_3-7-15.pkl"
 file = open(DATA_FILE, "rb")
 data = pickle.load(file)
 file.close()
@@ -25,8 +25,8 @@ for machine, row in zip(data.keys(), range(1, num_machines + 1)):
     plt.ylabel("CPU utilization percentage")
 
     # insert vertical lines for each process start
-    for process in data[machine]["processes"].keys():
-        stamp = data[machine]["processes"][process]
-        plt.axvline(stamp, color="r")
+#    for process in data[machine]["processes"].keys():
+#        stamp = data[machine]["processes"][process]
+#        plt.axvline(stamp, color="r")
 
 plt.show()
