@@ -38,22 +38,19 @@ RM = /usr/bin/cmake -E remove -f
 # Escaping for special characters.
 EQUALS = =
 
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/ccmake
-
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pi/thesis/LoadManager/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/thesis/LoadManager/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pi/thesis/LoadManager/catkin_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/thesis/LoadManager/catkin_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
+	/usr/bin/cmake -i .
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -123,14 +120,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/pi/thesis/LoadManager/catkin_ws/build/CMakeFiles /home/pi/thesis/LoadManager/catkin_ws/build/activity_monitor/CMakeFiles/progress.marks
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/thesis/LoadManager/catkin_ws/build/CMakeFiles 0
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/thesis/LoadManager/catkin_ws/build/CMakeFiles /home/ubuntu/thesis/LoadManager/catkin_ws/build/activity_monitor/CMakeFiles/progress.marks
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/thesis/LoadManager/catkin_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/clean
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/clean
 .PHONY : clean
 
 # The main clean target
@@ -139,22 +136,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/preinstall
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/preinstall
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -163,12 +160,12 @@ roscpp_generate_messages_cpp: activity_monitor/CMakeFiles/roscpp_generate_messag
 
 # fast build rule for target.
 roscpp_generate_messages_cpp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_cpp.dir/build
 .PHONY : roscpp_generate_messages_cpp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -177,12 +174,12 @@ roscpp_generate_messages_lisp: activity_monitor/CMakeFiles/roscpp_generate_messa
 
 # fast build rule for target.
 roscpp_generate_messages_lisp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_lisp.dir/build
 .PHONY : roscpp_generate_messages_lisp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/rule
 .PHONY : activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -191,12 +188,12 @@ roscpp_generate_messages_py: activity_monitor/CMakeFiles/roscpp_generate_message
 
 # fast build rule for target.
 roscpp_generate_messages_py/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/roscpp_generate_messages_py.dir/build
 .PHONY : roscpp_generate_messages_py/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -205,12 +202,12 @@ rosgraph_msgs_generate_messages_cpp: activity_monitor/CMakeFiles/rosgraph_msgs_g
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_cpp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -219,12 +216,12 @@ rosgraph_msgs_generate_messages_lisp: activity_monitor/CMakeFiles/rosgraph_msgs_
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_lisp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 .PHONY : activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -233,12 +230,12 @@ rosgraph_msgs_generate_messages_py: activity_monitor/CMakeFiles/rosgraph_msgs_ge
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_py/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -247,12 +244,12 @@ std_msgs_generate_messages_cpp: activity_monitor/CMakeFiles/std_msgs_generate_me
 
 # fast build rule for target.
 std_msgs_generate_messages_cpp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 .PHONY : std_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 .PHONY : activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -261,12 +258,12 @@ std_msgs_generate_messages_lisp: activity_monitor/CMakeFiles/std_msgs_generate_m
 
 # fast build rule for target.
 std_msgs_generate_messages_lisp/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
 .PHONY : std_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 .PHONY : activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -275,7 +272,7 @@ std_msgs_generate_messages_py: activity_monitor/CMakeFiles/std_msgs_generate_mes
 
 # fast build rule for target.
 std_msgs_generate_messages_py/fast:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/build
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(MAKE) -f activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/build.make activity_monitor/CMakeFiles/std_msgs_generate_messages_py.dir/build
 .PHONY : std_msgs_generate_messages_py/fast
 
 # Help Target
@@ -311,6 +308,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

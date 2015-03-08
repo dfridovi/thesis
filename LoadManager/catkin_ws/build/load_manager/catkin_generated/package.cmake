@@ -1,5 +1,5 @@
 set(_CATKIN_CURRENT_PACKAGE "load_manager")
-set(load_manager_MAINTAINER "pi <pi@todo.todo>")
+set(load_manager_MAINTAINER "ubuntu <ubuntu@todo.todo>")
 set(load_manager_DEPRECATED "")
 set(load_manager_VERSION "0.0.0")
 set(load_manager_BUILD_DEPENDS "roscpp" "rospy" "std_msgs")

@@ -1,1 +1,1 @@
-set(ORDERED_PATHS "/home/pi/ros_catkin_ws/install_isolated/lib")
+set(ORDERED_PATHS "/opt/ros/indigo/lib")

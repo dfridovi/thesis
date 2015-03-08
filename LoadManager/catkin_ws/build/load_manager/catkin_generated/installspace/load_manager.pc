@@ -1,8 +1,8 @@
-prefix=/home/pi/thesis/LoadManager/catkin_ws/install
+prefix=/home/ubuntu/thesis/LoadManager/catkin_ws/install
 
 Name: load_manager
 Description: Description of load_manager
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/pi/thesis/LoadManager/catkin_ws/install/lib 
+Libs: -L/home/ubuntu/thesis/LoadManager/catkin_ws/install/lib 
 Requires: 

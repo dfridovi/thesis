@@ -1,8 +1,8 @@
-# Install script for directory: /home/pi/thesis/LoadManager/catkin_ws/src
+# Install script for directory: /home/ubuntu/thesis/LoadManager/catkin_ws/src
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/pi/thesis/LoadManager/catkin_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/ubuntu/thesis/LoadManager/catkin_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,88 +44,89 @@ ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unsp
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/_setup_util.py")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/_setup_util.py")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE PROGRAM FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/_setup_util.py")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE PROGRAM FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/_setup_util.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/env.sh")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/env.sh")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE PROGRAM FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/env.sh")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE PROGRAM FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/env.sh")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/setup.bash")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/setup.bash")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.bash")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.bash")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/setup.sh")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/setup.sh")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.sh")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.sh")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/setup.zsh")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/setup.zsh")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.zsh")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/setup.zsh")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/pi/thesis/LoadManager/catkin_ws/install/.rosinstall")
+   "/home/ubuntu/thesis/LoadManager/catkin_ws/install/.rosinstall")
   IF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/home/pi/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/.rosinstall")
+FILE(INSTALL DESTINATION "/home/ubuntu/thesis/LoadManager/catkin_ws/install" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/catkin_generated/installspace/.rosinstall")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/catkin/profile.d" TYPE FILE FILES "/home/pi/ros_catkin_ws/install_isolated/share/catkin/cmake/env-hooks/05.catkin_make.bash")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/catkin/profile.d" TYPE FILE FILES "/opt/ros/indigo/share/catkin/cmake/env-hooks/05.catkin_make.bash")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/catkin/profile.d" TYPE FILE FILES "/home/pi/ros_catkin_ws/install_isolated/share/catkin/cmake/env-hooks/05.catkin_make_isolated.bash")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/catkin/profile.d" TYPE FILE FILES "/opt/ros/indigo/share/catkin/cmake/env-hooks/05.catkin_make_isolated.bash")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  INCLUDE("/home/pi/thesis/LoadManager/catkin_ws/build/activity_monitor/cmake_install.cmake")
-  INCLUDE("/home/pi/thesis/LoadManager/catkin_ws/build/load_manager/cmake_install.cmake")
+  INCLUDE("/home/ubuntu/thesis/LoadManager/catkin_ws/build/gtest/cmake_install.cmake")
+  INCLUDE("/home/ubuntu/thesis/LoadManager/catkin_ws/build/activity_monitor/cmake_install.cmake")
+  INCLUDE("/home/ubuntu/thesis/LoadManager/catkin_ws/build/load_manager/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)
 
@@ -135,7 +136,7 @@ ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
 
-FILE(WRITE "/home/pi/thesis/LoadManager/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/home/ubuntu/thesis/LoadManager/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/home/pi/thesis/LoadManager/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/ubuntu/thesis/LoadManager/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)

@@ -34,14 +34,11 @@ RM = /usr/bin/cmake -E remove -f
 # Escaping for special characters.
 EQUALS = =
 
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/ccmake
-
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pi/thesis/LoadManager/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/thesis/LoadManager/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pi/thesis/LoadManager/catkin_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/thesis/LoadManager/catkin_ws/build
 
 # Utility rule file for tests.
 
@@ -63,6 +60,6 @@ CMakeFiles/tests.dir/clean:
 .PHONY : CMakeFiles/tests.dir/clean
 
 CMakeFiles/tests.dir/depend:
-	cd /home/pi/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pi/thesis/LoadManager/catkin_ws/src /home/pi/thesis/LoadManager/catkin_ws/src /home/pi/thesis/LoadManager/catkin_ws/build /home/pi/thesis/LoadManager/catkin_ws/build /home/pi/thesis/LoadManager/catkin_ws/build/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/thesis/LoadManager/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/thesis/LoadManager/catkin_ws/src /home/ubuntu/thesis/LoadManager/catkin_ws/src /home/ubuntu/thesis/LoadManager/catkin_ws/build /home/ubuntu/thesis/LoadManager/catkin_ws/build /home/ubuntu/thesis/LoadManager/catkin_ws/build/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/tests.dir/depend
 

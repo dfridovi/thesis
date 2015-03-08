@@ -1,8 +1,8 @@
-# Install script for directory: /home/pi/thesis/LoadManager/catkin_ws/src/load_manager
+# Install script for directory: /home/ubuntu/thesis/LoadManager/catkin_ws/src/load_manager
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/pi/thesis/LoadManager/catkin_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/ubuntu/thesis/LoadManager/catkin_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_manager.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_manager.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/load_manager/cmake" TYPE FILE FILES
-    "/home/pi/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_managerConfig.cmake"
-    "/home/pi/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_managerConfig-version.cmake"
+    "/home/ubuntu/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_managerConfig.cmake"
+    "/home/ubuntu/thesis/LoadManager/catkin_ws/build/load_manager/catkin_generated/installspace/load_managerConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/load_manager" TYPE FILE FILES "/home/pi/thesis/LoadManager/catkin_ws/src/load_manager/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/load_manager" TYPE FILE FILES "/home/ubuntu/thesis/LoadManager/catkin_ws/src/load_manager/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

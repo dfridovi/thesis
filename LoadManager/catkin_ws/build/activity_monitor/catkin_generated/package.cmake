@@ -1,5 +1,5 @@
 set(_CATKIN_CURRENT_PACKAGE "activity_monitor")
-set(activity_monitor_MAINTAINER "pi <pi@todo.todo>")
+set(activity_monitor_MAINTAINER "ubuntu <ubuntu@todo.todo>")
 set(activity_monitor_DEPRECATED "")
 set(activity_monitor_VERSION "0.0.0")
 set(activity_monitor_BUILD_DEPENDS "roscpp" "rospy" "std_msgs")

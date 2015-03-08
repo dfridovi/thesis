@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/pi/thesis/LoadManager/catkin_ws/devel/setup.sh
+    local-name: /home/ubuntu/thesis/LoadManager/catkin_ws/devel/setup.sh

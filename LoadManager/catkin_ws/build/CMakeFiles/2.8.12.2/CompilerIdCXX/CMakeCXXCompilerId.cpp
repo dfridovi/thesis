@@ -10,6 +10,9 @@
 
 #if defined(__COMO__)
 # define COMPILER_ID "Comeau"
+  /* __COMO_VERSION__ = VRR */
+# define COMPILER_VERSION_MAJOR DEC(__COMO_VERSION__ / 100)
+# define COMPILER_VERSION_MINOR DEC(__COMO_VERSION__ % 100)
 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
 # define COMPILER_ID "Intel"
@@ -20,6 +23,14 @@
 # if defined(__INTEL_COMPILER_BUILD_DATE)
   /* __INTEL_COMPILER_BUILD_DATE = YYYYMMDD */
 #  define COMPILER_VERSION_TWEAK DEC(__INTEL_COMPILER_BUILD_DATE)
+# endif
+
+#elif defined(__PATHCC__)
+# define COMPILER_ID "PathScale"
+# define COMPILER_VERSION_MAJOR DEC(__PATHCC__)
+# define COMPILER_VERSION_MINOR DEC(__PATHCC_MINOR__)
+# if defined(__PATHCC_PATCHLEVEL__)
+#  define COMPILER_VERSION_PATCH DEC(__PATHCC_PATCHLEVEL__)
 # endif
 
 #elif defined(__clang__)
@@ -69,6 +80,10 @@
 
 #elif defined(__DECCXX)
 # define COMPILER_ID "Compaq"
+  /* __DECCXX_VER = VVRRTPPPP */
+# define COMPILER_VERSION_MAJOR DEC(__DECCXX_VER/10000000)
+# define COMPILER_VERSION_MINOR DEC(__DECCXX_VER/100000  % 100)
+# define COMPILER_VERSION_PATCH DEC(__DECCXX_VER         % 10000)
 
 #elif defined(__IBMCPP__)
 # if defined(__COMPILER_VER__)
@@ -93,14 +108,17 @@
 #  define COMPILER_VERSION_PATCH DEC(__PGIC_PATCHLEVEL__)
 # endif
 
-#elif defined(__PATHSCALE__)
-# define COMPILER_ID "PathScale"
-
 #elif defined(_CRAYC)
 # define COMPILER_ID "Cray"
+# define COMPILER_VERSION_MAJOR DEC(_RELEASE)
+# define COMPILER_VERSION_MINOR DEC(_RELEASE_MINOR)
 
 #elif defined(__TI_COMPILER_VERSION__)
-# define COMPILER_ID "TI_DSP"
+# define COMPILER_ID "TI"
+  /* __TI_COMPILER_VERSION__ = VVVRRRPPP */
+# define COMPILER_VERSION_MAJOR DEC(__TI_COMPILER_VERSION__/1000000)
+# define COMPILER_VERSION_MINOR DEC(__TI_COMPILER_VERSION__/1000   % 1000)
+# define COMPILER_VERSION_PATCH DEC(__TI_COMPILER_VERSION__        % 1000)
 
 #elif defined(__SCO_VERSION__)
 # define COMPILER_ID "SCO"
@@ -131,10 +149,22 @@
 #  define COMPILER_VERSION_TWEAK DEC(_MSC_BUILD)
 # endif
 
-#elif defined(__ADSPBLACKFIN__) || defined(__ADSPTS__) || defined(__ADSP21000__)
-/* Analog Devices C++ compiler for Blackfin, TigerSHARC and
-   SHARC (21000) DSPs */
+/* Analog VisualDSP++ >= 4.5.6 */
+#elif defined(__VISUALDSPVERSION__)
 # define COMPILER_ID "ADSP"
+  /* __VISUALDSPVERSION__ = 0xVVRRPP00 */
+# define COMPILER_VERSION_MAJOR HEX(__VISUALDSPVERSION__>>24)
+# define COMPILER_VERSION_MINOR HEX(__VISUALDSPVERSION__>>16 & 0xFF)
+# define COMPILER_VERSION_PATCH HEX(__VISUALDSPVERSION__>>8  & 0xFF)
+
+/* Analog VisualDSP++ < 4.5.6 */
+#elif defined(__ADSPBLACKFIN__) || defined(__ADSPTS__) || defined(__ADSP21000__)
+# define COMPILER_ID "ADSP"
+
+/* IAR Systems compiler for embedded systems.
+   http://www.iar.com */
+#elif defined(__IAR_SYSTEMS_ICC__ ) || defined(__IAR_SYSTEMS_ICC)
+# define COMPILER_ID "IAR"
 
 #elif defined(_SGI_COMPILER_VERSION) || defined(_COMPILER_VERSION)
 # define COMPILER_ID "MIPSpro"
@@ -207,11 +237,8 @@ char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 #elif defined(__hpux) || defined(__hpux__)
 # define PLATFORM_ID "HP-UX"
 
-#elif defined(__HAIKU) || defined(__HAIKU__) || defined(_HAIKU)
+#elif defined(__HAIKU__)
 # define PLATFORM_ID "Haiku"
-/* Haiku also defines __BEOS__ so we must 
-   put it prior to the check for __BEOS__
-*/
 
 #elif defined(__BeOS) || defined(__BEOS__) || defined(_BEOS)
 # define PLATFORM_ID "BeOS"
@@ -264,13 +291,19 @@ char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 #  define ARCHITECTURE_ID "IA64"
 
 # elif defined(_M_X64) || defined(_M_AMD64)
-#  define ARCHITECTURE_ID "x64" 
+#  define ARCHITECTURE_ID "x64"
 
 # elif defined(_M_IX86)
 #  define ARCHITECTURE_ID "X86"
 
 # elif defined(_M_ARM)
 #  define ARCHITECTURE_ID "ARM"
+
+# elif defined(_M_MIPS)
+#  define ARCHITECTURE_ID "MIPS"
+
+# elif defined(_M_SH)
+#  define ARCHITECTURE_ID "SHx"
 
 # else /* unknown architecture */
 #  define ARCHITECTURE_ID ""
