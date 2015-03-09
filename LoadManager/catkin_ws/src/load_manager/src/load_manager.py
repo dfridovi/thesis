@@ -30,7 +30,7 @@ UBUNTU = {"usr" : "ubuntu",
           "id"  : UBUNTU_ID}
 
 MACHINES = {SQUIRREL_ID : SQUIRREL, 
-            UBUNTU_ID : UBUNTU} 
+            ASDF_ID : ASDF} 
             
 # commands
 ROSCORE = "roscore\n"
@@ -52,7 +52,8 @@ CATCH_NODES = True
 # store load data, system history, commands, and launched processes
 load_data = {}
 history = DataCollector()
-HIST_FILE = "/home/ubuntu/thesis/LoadManager/data/history_data.pkl"
+PATH = "/home/ubuntu/thesis/LoadManager/data/"
+HIST_FILE = PATH + "history_file_" + str(time.time()) + ".pkl"
 
 command_queue = deque()
 process_queue = deque()

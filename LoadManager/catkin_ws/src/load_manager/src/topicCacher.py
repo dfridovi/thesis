@@ -4,6 +4,7 @@ Cache a ROS topic and, if required, post to that topic.
 
 import rospy
 from std_msgs.msg import *
+from move_base_msgs import *
 
 class TopicCacher:
     
