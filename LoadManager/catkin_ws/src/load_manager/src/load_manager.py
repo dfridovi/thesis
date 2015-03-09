@@ -7,11 +7,12 @@ Load manager package.
 import time, sys, os, functools
 import psutil, subprocess
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import *
 from collections import deque
 
 from filterCPU import FilterCPU
 from dataCollector import DataCollector
+from topicCacher import TopicCacher
 
 # set up machines
 SQUIRREL_ID = "128_112_49_207"
