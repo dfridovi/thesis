@@ -265,9 +265,11 @@ def genericCPUCallback(data, machine_id):
     load_data[machine_id]["activity"].update(float(data.data))
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
 
-    history.updateMachine(machine_id, load_data[machine_id]["activity"].output())
+    history.updateMachine(machine_id, 
+                          load_data[machine_id]["activity"].output())
 #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
-#                  str((load_data[machine_id]["activity"].output(), float(data.data))))
+#                  str((load_data[machine_id]["activity"].output(), 
+#                       float(data.data))))
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """
@@ -288,7 +290,8 @@ def killAll():
         process.terminate()
 
     # wait, then forceably kill all remaining processes
-    dead, alive = psutil.wait_procs(process_list, timeout=5, callback=onTerminateCallback)
+    dead, alive = psutil.wait_procs(process_list, timeout=5, 
+                                    callback=onTerminateCallback)
     for process in alive:
         process.kill()
 
@@ -305,7 +308,8 @@ if __name__ == "__main__":
         init()
 
         # set up CPU monitoring
-        rospy.init_node("load_manager", anonymous=True, disable_signals=True)
+        rospy.init_node("load_manager", anonymous=True, 
+                        disable_signals=True)
         monitorCPUs()
         
         # set up callbacks
@@ -317,11 +321,13 @@ if __name__ == "__main__":
         for machine_id in MACHINES.keys():
                 
             # initialize to empty filter
-            load_data[machine_id] = {"activity" : FilterCPU(_X = FILTER_INIT, _tap=FILTER_TAP),
+            load_data[machine_id] = {"activity" : FilterCPU(FILTER_INIT, 
+                                                            FILTER_TAP),
                                      "isIdle" : False}
         
             # subscribe
-            rospy.Subscriber("cpu_util/" + machine_id, String, callbacks[machine_id]) 
+            rospy.Subscriber("cpu_util/" + machine_id, String, 
+                             callbacks[machine_id]) 
         
         # set up and launch all tasks
         navigationSetup()
