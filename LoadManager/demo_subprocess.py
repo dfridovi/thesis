@@ -28,7 +28,7 @@ def navigation():
     SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch"
     AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/my_map.yaml"
 
-    roscore = openSSH(SQUIRREL, SQUIRREL)
+    roscore = openSSH(ASDF, ASDF)
     roscore.stdin.write(ROSCORE + "\n")
     time.sleep(5)
     
@@ -40,7 +40,7 @@ def navigation():
     senselaunch.stdin.write(SENSE_LAUNCH + "\n")
     time.sleep(5)
 
-    amcllaunch = openSSH(ASDF, ASDF)
+    amcllaunch = openSSH(SQUIRREL, SQUIRREL)
     amcllaunch.stdin.write(AMCL_LAUNCH + "\n")
 
 def mapping():
@@ -55,7 +55,7 @@ def mapping():
 
     # "roslaunch turtlebot_rviz_launchers view_navigation.launch"
 
-    roscore = openSSH(SQUIRREL, SQUIRREL)
+    roscore = openSSH(ASDF, ASDF)
     roscore.stdin.write(ROSCORE + "\n")
     time.sleep(5)
     
