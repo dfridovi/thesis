@@ -1,33 +1,53 @@
 """
-Cache a ROS topic and, if required, post to that topic.
+Cache a set of ROS topics and, if required, post data to each topic.
+
+Note: this is currently only intended to transfer data from the current
+position /move_base/feedback to /initialpose, and from /move_base/goal
+to itself.
 """
 
 import rospy
+import functools
 from std_msgs.msg import *
 from move_base_msgs import *
 
 class TopicCacher:
     
-    def __init__(self, _topic, _dtype):
+    def __init__(self, _topics):
         """
-        Setup subscriber on specific topic. Cache values in
-        the appropriate data structure. When required, publish
-        a value to that topic.
+        Setup subscriber on specific topics. Cache values in
+        the appropriate data structures.
         """
 
-        self.topic = _topic
-        self.dtype = _dtype
-        self.data = None
-        self.pub = rospy.Publisher(self.topic, self.dtype, 
-                                   queue_size=10)
+        self.data = {}
 
-        rospy.Subscriber(self.topic, self.dtype, self.listener)
+        # set up data structure to handle all this information
+        for topic in _topics.keys():
+            self.data[topic] = {}
+            self.data[topic]["dtype"] = _topics[topic]["dtype"]
+            self.data[topic]["data"] = None
+            self.data[topic]["dest"] = _topics[topic]["dest"]
+
+        # create a publisher for every "dest" entry
+        for topic in self.data.keys():
+            dest = self.data[topic]["dest"]
+            if dest is not None:
+                self.data[topic]["pub"] = rospy.Publisher(dest, 
+                                                          self.data[dest]["dtype"], 
+                                                          queue_size=10)
+
+        # register a subscriber for every topic
+        for topic in self.data.keys():
+            rospy.Subscriber(topic, self.data[topic]["dtype"], 
+                             functools.partial(listener, topic=topic))
 
 
-    def listener(self, msg):
+    def listener(self, msg, topic):
         """ Listen to the topic. With each callback, cache the data. """
         
-        self.data = msg.data
+        self.data[topic]["data"] = msg.data
+
+##### CHANGE THIS TO HANDLE NEW ARCHITECTURE #####
 
     def publish(self, data=None):
         """ 

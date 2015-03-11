@@ -8,6 +8,8 @@ import time, sys, os, functools
 import psutil, subprocess
 import rospy
 from std_msgs.msg import *
+from geometry_msgs import *
+from move_base_msgs import *
 from collections import deque
 
 from filterCPU import FilterCPU
@@ -65,7 +67,8 @@ def init():
     ssh = executeCommand({"machine" : SQUIRREL,
                           "command" : ROSCORE,
                           "catchOut" : False,
-                          "isMovable" : False})
+                          "isMovable" : False,
+                          "topics" : None})
 
 def openSSH(usr, ip, catch_output=False):
     """ Open an SSH connection to the specified machine. """
@@ -78,7 +81,7 @@ def openSSH(usr, ip, catch_output=False):
         ssh = psutil.Popen(SSH, stdin=subprocess.PIPE)
     return ssh
 
-def executeCommand(command):
+def executeCommand(command, delay=WAIT_TIME):
     """ Execute a command on the specified machine. """
 
     ssh = openSSH(command["machine"]["usr"], 
@@ -92,7 +95,7 @@ def executeCommand(command):
     # add to process_queue, then sleep
     command["process"] = ssh
     process_queue.append(command)
-    time.sleep(WAIT_TIME)
+    time.sleep(delay)
 
 def monitorCPUs():
     """ Launch CPU monitoring node on all machines. """
@@ -102,7 +105,9 @@ def monitorCPUs():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
                               "catchOut" : True, 
-                              "isMovable" : False})
+                              "isMovable" : False,
+                              "topics" : None},
+                             delay=0.0)
 
 
 def isIdle(machine_id):
@@ -153,6 +158,7 @@ def launchTasks():
        them back to the command_queue.
     2) Check command_queue and launch any pending commands.
     3) Kill all marked processes.
+    4) For all transferred topics, publish cached data.
     """
 
     while True:
@@ -199,6 +205,10 @@ def launchTasks():
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
             
+            #  republish all topics for this task
+            if task["topics"] is not None:
+                task["topics"].publish()
+            
         # print state of all processes
         printState()
 
@@ -219,19 +229,29 @@ def navigationSetup():
     Add the requisite commands for autonomous navigation
     to the command queue.
     """
+
+    AMCL_TOPICS = topicCacher({"/move_base/goal" : {"dtype" : MoveBaseActionGoal,
+                                                    "dest" : "/move_base/goal"},
+                               "/initialpose" : {"dtype" : PoseWithCovarianceStamped,
+                                                 "dest" : None},
+                               "/move_base/feedback" : {"dtype" : MoveBaseActionFeedback,
+                                                        "dest" : "/initialpose"}})
     
-    command_queue.append({"machine" : UBUNTU,
+    command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False})
-    command_queue.append({"machine" : UBUNTU,
+                          "isMovable" : False,
+                          "topics" : None})
+    command_queue.append({"machine" : ASDF,
                           "command" : SENSE_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False})
-    command_queue.append({"machine" : UBUNTU, #SQUIRREL,
+                          "isMovable" : False,
+                          "topics" : None})
+    command_queue.append({"machine" : ASDF, #SQUIRREL,
                           "command" : AMCL_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : True})
+                          "isMovable" : True,
+                          "topics" : AMCL_TOPICS})
     
 def mappingSetup():
     """
@@ -239,21 +259,23 @@ def mappingSetup():
 
     Note that this will not start keyboard_teleop, since that
     requires additional user interaction (which is outside the scope
-    of this module). That command may be launched on UBUNTU as follows:
+    of this module). That command may be launched on ASDF as follows:
     $ roslaunch turtlebot_teleop keyboard_teleop.launch
 
     Similarly, this does not start RViz. You may do so manually:
     $ roslaunch turtlebot_rviz_launchers view_navigation.launch
     """
 
-    command_queue.append({"machine" : UBUNTU,
+    command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False})
-    command_queue.append({"machine" : UBUNTU,
+                          "isMovable" : False,
+                          "topics" : None})
+    command_queue.append({"machine" : ASDF,
                           "command" : MAPPING_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : True})
+                          "isMovable" : True,
+                          "topics" : None})
 
 def genericCPUCallback(data, machine_id):
     """
