@@ -47,13 +47,38 @@ class TopicCacher:
         
         self.data[topic]["data"] = msg.data
 
-##### CHANGE THIS TO HANDLE NEW ARCHITECTURE #####
-
-    def publish(self, data=None):
+    def publish(self):
         """ 
-        Publish the input data, if it is given. If not, 
-        publish the most recently cached data from this topic.
+        For every topic, publish its most recently cached data to
+        the specified destination.
+
+        Here, we hard-code in a datatype conversion between 
+        MoveBaseActionFeedback and PoseWithCovarianceStamped. 
         """
 
-        rospy.loginfo(data)
-        self.pub.publish(data)
+        for topic in self.data.keys():
+            dest = self.data[topic]["dest"]
+
+            if dest is not None:
+                dtype_in = self.data[topic]["dtype"]
+                dtype_out = self.data[dest]["dtype"]
+
+                data_in = self.data[topic]["data"]
+                if data_in is None:
+                    raise Exception("No data to publish.")
+
+                # handle identical input/output dtypes
+                if dtype_in == dtype_out:
+                    self.data["pub"].publish(data_in)
+
+                # check if the types match the description above
+                elif ((dtype_in == MoveBaseActionFeedback) and 
+                      (dtype_out == PoseWithCovarianceStamped)):
+                    
+                    # -------------- FILL THIS IN -------------- #
+
+                # if neither of the above, there's a problem
+                else:
+                    raise Exception("Unrecognized input/output combination.")
+
+        
