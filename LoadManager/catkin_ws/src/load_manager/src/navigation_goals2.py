@@ -22,8 +22,8 @@ def simple_move():
 
     #use self?
     #set goal
-    goal.target_pose.pose.position.x = 1.0
-    goal.target_pose.pose.position.y = 0.0
+    goal.target_pose.pose.position.x = 2.0
+    goal.target_pose.pose.position.y = 1.0
     goal.target_pose.pose.orientation.w = 1.0
     goal.target_pose.header.frame_id = 'map'
     goal.target_pose.header.stamp = rospy.Time.now()

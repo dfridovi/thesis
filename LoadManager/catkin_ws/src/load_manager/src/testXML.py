@@ -6,9 +6,14 @@ FILE = "amcl_demo_edited.launch"
 tree = etree.parse(PATH + FILE)
 root = tree.getroot()
 
-for elem in root.iter("arg"):
+for elem in root.findall("arg"):
     if elem.attrib["name"] == "initial_pose_x":
-        elem.attrib["default"] = "3.0"
+        elem.attrib["default"] = "3.041"
+    if elem.attrib["name"] == "initial_pose_y":
+        elem.attrib["default"] = "0.287"
+    if elem.attrib["name"] == "initial_pose_a":
+        elem.attrib["default"] = "2.052"
+
         
 with open(PATH + FILE, 'w') as file_handle:
     file_handle.write(etree.tostring(tree, pretty_print=True, encoding='utf8'))
