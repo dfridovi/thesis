@@ -1,1 +1,2 @@
-activity_monitor:load_manager
+activity_monitor:load_manager:simple_navigation_goals
+-DCATKIN_DEVEL_PREFIX=/home/asdf/thesis/LoadManager/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/asdf/thesis/LoadManager/catkin_ws/install
