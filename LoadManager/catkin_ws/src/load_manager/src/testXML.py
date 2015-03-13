@@ -8,11 +8,11 @@ root = tree.getroot()
 
 for elem in root.findall("arg"):
     if elem.attrib["name"] == "initial_pose_x":
-        elem.attrib["default"] = "3.041"
+        elem.attrib["default"] = "1.112"
     if elem.attrib["name"] == "initial_pose_y":
-        elem.attrib["default"] = "0.287"
+        elem.attrib["default"] = "-0.219"
     if elem.attrib["name"] == "initial_pose_a":
-        elem.attrib["default"] = "2.052"
+        elem.attrib["default"] = "0.005"
 
         
 with open(PATH + FILE, 'w') as file_handle:
