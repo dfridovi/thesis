@@ -1,3 +1,4 @@
+import sys
 from lxml import etree
 
 PATH = "/opt/ros/hydro/share/turtlebot_navigation/launch/"
@@ -8,11 +9,11 @@ root = tree.getroot()
 
 for elem in root.findall("arg"):
     if elem.attrib["name"] == "initial_pose_x":
-        elem.attrib["default"] = "1.112"
+        elem.attrib["default"] = sys.argv[2]
     if elem.attrib["name"] == "initial_pose_y":
-        elem.attrib["default"] = "-0.219"
+        elem.attrib["default"] = sys.argv[3]
     if elem.attrib["name"] == "initial_pose_a":
-        elem.attrib["default"] = "0.005"
+        elem.attrib["default"] = sys.argv[4]
 
         
 with open(PATH + FILE, 'w') as file_handle:
