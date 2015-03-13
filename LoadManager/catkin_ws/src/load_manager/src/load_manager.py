@@ -308,6 +308,9 @@ def onTerminateCallback(process):
 
     print("Process {} terminated".format(process))
 
+def moveState(process):
+	
+
 def killAll():
     """ Kill all running processes. """
     
