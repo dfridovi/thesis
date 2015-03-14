@@ -14,10 +14,8 @@ from collections import deque
 
 from filterCPU import FilterCPU
 from dataCollector import DataCollector
-<<<<<<< HEAD
-=======
 from topicCacher import PositionTracker
->>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
+
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
@@ -113,11 +111,7 @@ def monitorCPUs():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
                               "catchOut" : True, 
-<<<<<<< HEAD
-                              "isMovable" : False},
-=======
                               "isMovable" : False})
->>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
                              delay=0.0)
 
 
@@ -210,8 +204,6 @@ def launchTasks():
                    task["machine"]["id"] + ": " + task["command"])
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
-<<<<<<< HEAD
-=======
 
         # now check command_queue and launch
         while len(command_queue) > 0:
@@ -225,7 +217,6 @@ def launchTasks():
 
             # execute
             executeCommand(command)
->>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
             
         # print state of all processes
         printState()
@@ -262,13 +253,9 @@ def navigationSetup():
     """
     Add the requisite commands for autonomous navigation
     to the command queue.
-<<<<<<< HEAD
-    """ 
-=======
     """
 
     position = PositionTracker()
->>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
     
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
@@ -278,11 +265,8 @@ def navigationSetup():
                           "command" : SENSE_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : False})
-<<<<<<< HEAD
-    command_queue.append({"machine" : ASDF,
-=======
+
     command_queue.append({"machine" : ASDF, #SQUIRREL,
->>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
                           "command" : AMCL_LAUNCH,
                           "catchOut" : CATCH_NODES,
                           "isMovable" : True})
