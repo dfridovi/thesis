@@ -14,10 +14,13 @@ from collections import deque
 
 from filterCPU import FilterCPU
 from dataCollector import DataCollector
-from topicCacher import TopicCacher
+<<<<<<< HEAD
+=======
+from topicCacher import PositionTracker
+>>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
 
 # set up machines
-SQUIRREL_ID = "128_112_49_207"
+SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
 UBUNTU_ID = "10_9_39_144"
 
@@ -38,9 +41,10 @@ MACHINES = {SQUIRREL_ID : SQUIRREL,
 ROSCORE = "roscore\n"
 MIN_LAUNCH = "roslaunch turtlebot_bringup minimal.launch\n"
 SENSE_LAUNCH = "roslaunch turtlebot_bringup 3dsensor_edited.launch\n"
-AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/home/asdf/thesis/ee_small.yaml\n"
+AMCL_LAUNCH = "roslaunch turtlebot_navigation amcl_demo_edited.launch map_file:=/tmp/ee_small.yaml\n"
 MAPPING_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch\n"
 ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
+INIT_POSITION = "rosrun load_manager setPosition.py"
 
 # other parameters
 FILTER_TAP = 0.995
@@ -53,12 +57,17 @@ CATCH_NODES = True
 
 # store load data, system history, commands, and launched processes
 load_data = {}
+position = None
 history = DataCollector()
 PATH = "/home/ubuntu/thesis/LoadManager/data/"
 HIST_FILE = PATH + "history_file_" + str(time.time()) + ".pkl"
 
 command_queue = deque()
 process_queue = deque()
+
+# system time
+start_time = time.time()
+SWITCH_TIME = 90.0
 
 def init():
     """ Launch roscore on SQUIRREL. """
@@ -67,8 +76,7 @@ def init():
     ssh = executeCommand({"machine" : SQUIRREL,
                           "command" : ROSCORE,
                           "catchOut" : False,
-                          "isMovable" : False,
-                          "topics" : None})
+                          "isMovable" : False})
 
 def openSSH(usr, ip, catch_output=False):
     """ Open an SSH connection to the specified machine. """
@@ -105,8 +113,11 @@ def monitorCPUs():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
                               "catchOut" : True, 
-                              "isMovable" : False,
-                              "topics" : None},
+<<<<<<< HEAD
+                              "isMovable" : False},
+=======
+                              "isMovable" : False})
+>>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
                              delay=0.0)
 
 
@@ -122,6 +133,8 @@ def isIdle(machine_id):
  
     if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
         return not idle
+    elif (machine_id == ASDF_ID) and (time.time() - start_time > SWITCH_TIME):
+        return False
     else:
         return idle
         
@@ -156,9 +169,9 @@ def launchTasks():
     1) Check process_queue and see if there are any processes
        running on non-idle machines. Mark those processes and add
        them back to the command_queue.
-    2) Check command_queue and launch any pending commands.
-    3) Kill all marked processes.
-    4) For all transferred topics, publish cached data.
+    2) Kill all marked processes.
+    3) Check command_queue and launch any pending commands, making
+       sure to edit the amcl launch file if needed.
     """
 
     while True:
@@ -191,23 +204,28 @@ def launchTasks():
                         new_task["process"] = None
                         command_queue.append(new_task)
                             
-        # now check command_queue
-        while len(command_queue) > 0:
-            command = command_queue.popleft()
-            print ("********************** Launching process on " + 
-                   command["machine"]["id"] + ": " + command["command"])
-            executeCommand(command)
-            
         # now kill all marked processes
         for task in marked_processes:
             print ("********************** Killing process on " + 
                    task["machine"]["id"] + ": " + task["command"])
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
-            
-            #  republish all topics for this task
-            if task["topics"] is not None:
-                task["topics"].publish()
+<<<<<<< HEAD
+=======
+
+        # now check command_queue and launch
+        while len(command_queue) > 0:
+            command = command_queue.popleft()
+            print ("********************** Launching process on " + 
+                   command["machine"]["id"] + ": " + command["command"])
+
+            # adjust amcl launch file if needed
+            if command["command"] == AMCL_LAUNCH:
+                initPosition(command["machine"])
+
+            # execute
+            executeCommand(command)
+>>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
             
         # print state of all processes
         printState()
@@ -215,6 +233,22 @@ def launchTasks():
         # tic
         print "--------------------------------------------------------------------------"
         time.sleep(UPDATE_INTERVAL)
+
+def initPosition(machine):
+    """ 
+    SSH into machine and alter amcl_demo_edited.launch file to include 
+    current position as default.
+    """
+
+    print "Setting initial position on " + machine["id"]
+    x = position.position()["x"]
+    y = position.position()["y"]
+    a = position.position()["a"]
+    ssh = executeCommand({"machine"  : machine,
+                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a)
+                          "catchOut" : True, 
+                          "isMovable" : False},
+                         delay=0.5)
 
 def printState():
     for task in process_queue:
@@ -228,30 +262,30 @@ def navigationSetup():
     """
     Add the requisite commands for autonomous navigation
     to the command queue.
+<<<<<<< HEAD
+    """ 
+=======
     """
 
-    AMCL_TOPICS = topicCacher({"/move_base/goal" : {"dtype" : MoveBaseActionGoal,
-                                                    "dest" : "/move_base/goal"},
-                               "/initialpose" : {"dtype" : PoseWithCovarianceStamped,
-                                                 "dest" : None},
-                               "/move_base/feedback" : {"dtype" : MoveBaseActionFeedback,
-                                                        "dest" : "/initialpose"}})
+    position = PositionTracker()
+>>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
     
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False,
-                          "topics" : None})
+                          "isMovable" : False})
     command_queue.append({"machine" : ASDF,
                           "command" : SENSE_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False,
-                          "topics" : None})
+                          "isMovable" : False})
+<<<<<<< HEAD
+    command_queue.append({"machine" : ASDF,
+=======
     command_queue.append({"machine" : ASDF, #SQUIRREL,
+>>>>>>> 0002d1c125ffb74fddde2f5cd097f15c4a9f8b54
                           "command" : AMCL_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : True,
-                          "topics" : AMCL_TOPICS})
+                          "isMovable" : True})
     
 def mappingSetup():
     """
@@ -269,13 +303,11 @@ def mappingSetup():
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : False,
-                          "topics" : None})
+                          "isMovable" : False})
     command_queue.append({"machine" : ASDF,
                           "command" : MAPPING_LAUNCH,
                           "catchOut" : CATCH_NODES,
-                          "isMovable" : True,
-                          "topics" : None})
+                          "isMovable" : True})
 
 def genericCPUCallback(data, machine_id):
     """
