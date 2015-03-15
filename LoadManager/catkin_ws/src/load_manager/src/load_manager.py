@@ -111,7 +111,7 @@ def monitorCPUs():
         ssh = executeCommand({"machine"  : MACHINES[machine_id],
                               "command"  : ACTIVITY_LAUNCH,
                               "catchOut" : True, 
-                              "isMovable" : False})
+                              "isMovable" : False},
                              delay=0.0)
 
 
@@ -236,7 +236,7 @@ def initPosition(machine):
     y = position.position()["y"]
     a = position.position()["a"]
     ssh = executeCommand({"machine"  : machine,
-                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a)
+                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a),
                           "catchOut" : True, 
                           "isMovable" : False},
                          delay=0.5)
@@ -315,9 +315,6 @@ def onTerminateCallback(process):
     """ Callback function for process termination. """
 
     print("Process {} terminated".format(process))
-
-def moveState(process):
-	
 
 def killAll():
     """ Kill all running processes. """
