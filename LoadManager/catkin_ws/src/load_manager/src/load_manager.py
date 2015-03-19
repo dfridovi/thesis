@@ -8,13 +8,15 @@ import time, sys, os, functools
 import psutil, subprocess
 import rospy
 from std_msgs.msg import *
-from geometry_msgs import *
+import geometry_msgs
+import pubgoal
 from move_base_msgs import *
 from collections import deque
 
 from filterCPU import FilterCPU
 from dataCollector import DataCollector
-from topicCacher import PositionTracker
+from topicCacher import PositionTracker, GoalTracker
+from manualsignals import ManualSignal
 
 
 # set up machines
@@ -55,7 +57,11 @@ CATCH_NODES = True
 
 # store load data, system history, commands, and launched processes
 load_data = {}
+
 position = None
+goal = None
+signal = None
+
 history = DataCollector()
 PATH = "/home/ubuntu/thesis/LoadManager/data/"
 HIST_FILE = PATH + "history_file_" + str(time.time()) + ".pkl"
@@ -65,7 +71,7 @@ process_queue = deque()
 
 # system time
 start_time = time.time()
-SWITCH_TIME = 90.0
+SWITCH_TIME = 90000.0
 
 def init():
     """ Launch roscore on SQUIRREL. """
@@ -89,7 +95,6 @@ def openSSH(usr, ip, catch_output=False):
 
 def executeCommand(command, delay=WAIT_TIME):
     """ Execute a command on the specified machine. """
-
     ssh = openSSH(command["machine"]["usr"], 
                   command["machine"]["ip"],
                   command["catchOut"])
@@ -127,8 +132,6 @@ def isIdle(machine_id):
  
     if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
         return not idle
-    elif (machine_id == ASDF_ID) and (time.time() - start_time > SWITCH_TIME):
-        return False
     else:
         return idle
         
@@ -181,11 +184,11 @@ def launchTasks():
                 
                 # check if machine is not idle anymore and remove
                 machine = task["machine"]
-                if not load_data[machine["id"]]["isIdle"]:
+                if not load_data[machine["id"]]["isIdle"] or signal.message() == "switch":
                     
                     # find (the most) idle machine
                     idle_machine = findIdleMachine()
-                    
+                    signal.clear()
                     # only move the process if there is an idle machine on the network
                     if idle_machine is not None:
 
@@ -208,18 +211,24 @@ def launchTasks():
         # now check command_queue and launch
         while len(command_queue) > 0:
             command = command_queue.popleft()
-            print ("********************** Launching process on " + 
-                   command["machine"]["id"] + ": " + command["command"])
-
-            # adjust amcl launch file if needed
-            if command["command"] == AMCL_LAUNCH:
+            
+		# adjust amcl launch file if needed
+            print goal.goal()
+            if command["command"] == AMCL_LAUNCH and goal.goal() != None:
+                firstlaunch = false
                 initPosition(command["machine"])
+                pubgoal.simple_move(goal.goal())
+            print ("********************** Launching process on " + 
+                      command["machine"]["id"] + ": " + command["command"])
 
             # execute
             executeCommand(command)
             
         # print state of all processes
-        printState()
+
+        #printState()
+        print "Robot At:"
+        print position.position()
 
         # tic
         print "--------------------------------------------------------------------------"
@@ -230,16 +239,43 @@ def initPosition(machine):
     SSH into machine and alter amcl_demo_edited.launch file to include 
     current position as default.
     """
-
-    print "Setting initial position on " + machine["id"]
+     
+    print "Setting initial position on " + machine["id"] + " :"
+    print position.position()
     x = position.position()["x"]
     y = position.position()["y"]
     a = position.position()["a"]
+
+    print "executing command " + INIT_POSITION + " %s %s %s" % (x, y, a)
     ssh = executeCommand({"machine"  : machine,
                           "command"  : INIT_POSITION + " %s %s %s" % (x, y, a),
                           "catchOut" : True, 
                           "isMovable" : False},
                          delay=0.5)
+
+def initPositionTopic():
+    """ 
+	Publish to initialPose the current position
+    """
+     
+    print "Publising to Initial Pose"
+    print position.position()
+    x = position.position()["x"]
+    y = position.position()["y"]
+    a = position.position()["a"]
+
+
+    rate = rospy.Rate(1) # 10hz
+	    
+    pose = geometry_msgs.msg.PoseWithCovarianceStamped()
+    pose.header.frame_id = 'map'
+    pose.pose.pose.position.x=-1
+    pose.pose.pose.position.y=0
+    pose.pose.pose.position.z=0
+    pose.pose.covariance=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891945200942]
+    pose.pose.pose.orientation.z=0.0267568523876
+    pose.pose.pose.orientation.w=0.999641971333
+
 
 def printState():
     for task in process_queue:
@@ -250,13 +286,20 @@ def printState():
         print "Command: " + task["command"]
 
 def navigationSetup():
-    """
-    Add the requisite commands for autonomous navigation
-    to the command queue.
-    """
-
-    position = PositionTracker()
     
+    #Add the requisite commands for autonomous navigation
+    #to the command queue.
+
+    global position
+    position = PositionTracker()
+    global goal
+    goal = GoalTracker()
+    global signal	
+    signal = ManualSignal()
+    
+    print "setting up navigation with initial pose"
+    print position.position()
+
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
@@ -283,7 +326,7 @@ def mappingSetup():
     Similarly, this does not start RViz. You may do so manually:
     $ roslaunch turtlebot_rviz_launchers view_navigation.launch
     """
-
+		
     command_queue.append({"machine" : ASDF,
                           "command" : MIN_LAUNCH,
                           "catchOut" : CATCH_NODES,
@@ -328,7 +371,9 @@ def killAll():
         process = task["process"]
         process_list.append(process)
         process.terminate()
-
+    
+    #Add roscore to the list of processes to terminate
+    
     # wait, then forceably kill all remaining processes
     dead, alive = psutil.wait_procs(process_list, timeout=5, 
                                     callback=onTerminateCallback)
@@ -369,6 +414,7 @@ if __name__ == "__main__":
             rospy.Subscriber("cpu_util/" + machine_id, String, 
                              callbacks[machine_id]) 
         
+		
         # set up and launch all tasks
         navigationSetup()
         launchTasks()
