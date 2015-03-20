@@ -214,13 +214,15 @@ def launchTasks():
             
 		# adjust amcl launch file if needed
             print goal.goal()
-            if command["command"] == AMCL_LAUNCH and goal.goal() != None:
-                firstlaunch = false
+            if command["command"] == AMCL_LAUNCH:
                 initPosition(command["machine"])
-                pubgoal.simple_move(goal.goal())
+                
             print ("********************** Launching process on " + 
                       command["machine"]["id"] + ": " + command["command"])
-
+            
+            if command["command"] == AMCL_LAUNCH and goal.goal() != None:
+                pubgoal.simple_move(goal.goal())      
+			
             # execute
             executeCommand(command)
             
@@ -248,7 +250,7 @@ def initPosition(machine):
 
     print "executing command " + INIT_POSITION + " %s %s %s" % (x, y, a)
     ssh = executeCommand({"machine"  : machine,
-                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a),
+                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a)+"\n",
                           "catchOut" : True, 
                           "isMovable" : False},
                          delay=0.5)
