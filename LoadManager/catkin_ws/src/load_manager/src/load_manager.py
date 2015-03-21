@@ -26,13 +26,16 @@ UBUNTU_ID = "10_9_39_144"
 
 SQUIRREL = {"usr" : "squirrel", 
             "ip"  : "squirrel", 
-            "id"  : SQUIRREL_ID}
+            "id"  : SQUIRREL_ID,
+            "ssh" : None}
 ASDF = {"usr" : "asdf", 
         "ip"  : "asdf", 
-        "id"  : ASDF_ID}
+        "id"  : ASDF_ID,
+        "ssh" : None}
 UBUNTU = {"usr" : "ubuntu",
           "ip"  : "ubuntu",
-          "id"  : UBUNTU_ID}
+          "id"  : UBUNTU_ID,
+          "ssh" : None}
 
 MACHINES = {SQUIRREL_ID : SQUIRREL, 
             ASDF_ID : ASDF} 
@@ -46,14 +49,15 @@ MAPPING_LAUNCH = "roslaunch turtlebot_navigation gmapping_demo.launch\n"
 ACTIVITY_LAUNCH = "rosrun activity_monitor cpu_utilization.py\n"
 INIT_POSITION = "rosrun load_manager setPosition.py"
 
+
 # other parameters
 FILTER_TAP = 0.995
 FILTER_INIT = 0.0
 WAIT_TIME = 5
 UPDATE_INTERVAL = 1
 CPU_LO = 25.0
-CPU_HI = float("inf")
-CATCH_NODES = True
+CPU_HI = 90.0
+CATCH_NODES = False
 
 # store load data, system history, commands, and launched processes
 load_data = {}
@@ -74,13 +78,20 @@ start_time = time.time()
 SWITCH_TIME = 90000.0
 
 def init():
-    """ Launch roscore on SQUIRREL. """
-    
+    """ Create SSH shells and launch roscore on SQUIRREL."""
+
+    for machine_id in MACHINES.keys():
+        machine = MACHINES[machine_id]
+        
+        if machine["ssh"] is None:
+            machine["ssh"] = openSSH(machine["usr"], machine["ip"])
+
+
     print "Launching roscore..."
-    ssh = executeCommand({"machine" : SQUIRREL,
-                          "command" : ROSCORE,
-                          "catchOut" : False,
-                          "isMovable" : False})
+    executeCommand({"machine" : SQUIRREL,
+                    "command" : ROSCORE,
+                    "catchOut" : CATCH_NODES,
+                    "isMovable" : False})
 
 def openSSH(usr, ip, catch_output=False):
     """ Open an SSH connection to the specified machine. """
@@ -95,17 +106,24 @@ def openSSH(usr, ip, catch_output=False):
 
 def executeCommand(command, delay=WAIT_TIME):
     """ Execute a command on the specified machine. """
-    ssh = openSSH(command["machine"]["usr"], 
-                  command["machine"]["ip"],
-                  command["catchOut"])
-    ssh.stdin.write(command["command"])
+
+    oldssh = command["machine"]["ssh"]
+    oldssh.stdin.write(command["command"])
     
     # log to history
     history.updateProcess(command["machine"]["id"], command["command"])
 
-    # add to process_queue, then sleep
-    command["process"] = ssh
+    # add to process_queue
+    command["process"] = oldssh
     process_queue.append(command)
+
+    # get new ssh shell for this machine
+    newssh = openSSH(command["machine"]["usr"], 
+                     command["machine"]["ip"],
+                     command["catchOut"])
+    command["machine"]["ssh"] = newssh
+
+    # sleep
     time.sleep(delay)
 
 def monitorCPUs():
@@ -113,11 +131,11 @@ def monitorCPUs():
     
     for machine_id in MACHINES.keys():
         print "Launching CPU monitor code for machine: " + machine_id
-        ssh = executeCommand({"machine"  : MACHINES[machine_id],
-                              "command"  : ACTIVITY_LAUNCH,
-                              "catchOut" : True, 
-                              "isMovable" : False},
-                             delay=0.0)
+        executeCommand({"machine"  : MACHINES[machine_id],
+                        "command"  : ACTIVITY_LAUNCH,
+                        "catchOut" : True, 
+                        "isMovable" : False},
+                       delay=0.0)
 
 
 def isIdle(machine_id):
@@ -218,13 +236,13 @@ def launchTasks():
                 initPosition(command["machine"])
                 
             print ("********************** Launching process on " + 
-                      command["machine"]["id"] + ": " + command["command"])
-            
-            if command["command"] == AMCL_LAUNCH and goal.goal() != None:
-                pubgoal.simple_move(goal.goal())      
+                      command["machine"]["id"] + ": " + command["command"])     
 			
             # execute
             executeCommand(command)
+
+            if command["command"] == AMCL_LAUNCH and goal.goal() != None:
+                pubgoal.simple_move(goal.goal()) 
             
         # print state of all processes
 
@@ -249,11 +267,11 @@ def initPosition(machine):
     a = position.position()["a"]
 
     print "executing command " + INIT_POSITION + " %s %s %s" % (x, y, a)
-    ssh = executeCommand({"machine"  : machine,
-                          "command"  : INIT_POSITION + " %s %s %s" % (x, y, a)+"\n",
-                          "catchOut" : True, 
-                          "isMovable" : False},
-                         delay=0.5)
+    executeCommand({"machine"  : machine,
+                    "command"  : INIT_POSITION + " %s %s %s" % (x, y, a)+"\n",
+                    "catchOut" : CATCH_NODES, 
+                    "isMovable" : False},
+                   delay=0.5)
 
 def initPositionTopic():
     """ 
@@ -355,6 +373,9 @@ def genericCPUCallback(data, machine_id):
 #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
 #                  str((load_data[machine_id]["activity"].output(), 
 #                       float(data.data))))
+
+def nice(command,niceness = 0):
+    return "nice -n "+str(niceness)+" "+command 
 
 def onTerminateCallback(process):
     """ Callback function for process termination. """

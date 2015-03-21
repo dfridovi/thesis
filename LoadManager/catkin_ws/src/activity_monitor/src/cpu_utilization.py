@@ -20,7 +20,7 @@ def cpu_util():
     # continuously publish
     while not rospy.is_shutdown():
         data = str(psutil.cpu_percent())
-        rospy.loginfo(data)
+        #rospy.loginfo(data)
         pub.publish(data)
         rate.sleep()
 
