@@ -245,8 +245,8 @@ def launchTasks():
                 pubgoal.simple_move(goal.goal()) 
             
         # print state of all processes
+        printState()
 
-        #printState()
         print "Robot At:"
         print position.position()
 
