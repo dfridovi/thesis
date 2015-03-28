@@ -14,16 +14,19 @@ class DataCollector:
         self.initTime = time.time()
         self.activity = {}
 
-    def updateMachine(self, machine, cpu):
+    def updateMachine(self, machine, raw_cpu, filtered_cpu):
         """ Keep track of machine activity with time stamps. """
 
         stamp = time.time() - self.initTime
-        cpu = float(cpu)
+        raw_cpu = float(raw_cpu)
+        filtered_cpu = float(filtered_cpu)
         if machine in self.activity.keys():
-            self.activity[machine]["activity"].append(cpu)
+            self.activity[machine]["filtered activity"].append(filtered_cpu)
+            self.activity[machine]["raw activity"].append(raw_cpu)
             self.activity[machine]["time"].append(stamp)
         else:
-            self.activity[machine] = {"activity" : [cpu],
+            self.activity[machine] = {"filtered activity" : [filtered_cpu],
+                                      "raw activity" : [raw_cpu],
                                       "time" : [stamp]}
 
     def updateProcess(self, machine, process):
@@ -32,13 +35,14 @@ class DataCollector:
         stamp = time.time() - self.initTime
         if machine in self.activity.keys():
             if "processes" in self.activity[machine].keys():
-                self.activity[machine]["processes"][process] = stamp
+                self.activity[machine]["processes"][process].append(stamp)
             else:
-                self.activity[machine]["processes"] = {process : stamp}
+                self.activity[machine]["processes"] = {process : [stamp]}
         else:
-            self.activity[machine] = {"activity" : [],
+            self.activity[machine] = {"filtered activity" : [],
+                                      "raw activity" : [],
                                       "time" : [],
-                                      "processes" : {process : stamp}}
+                                      "processes" : {process : [stamp]}}
 
     def save(self, filename):
         """ 
@@ -50,7 +54,8 @@ class DataCollector:
 
         for machine in self.activity.keys():
             data = self.activity[machine].copy()
-            data["activity"] = np.array(data["activity"], dtype=np.float)
+            data["filtered activity"] = np.array(data["filtered activity"], dtype=np.float)
+            data["raw activity"] = np.array(data["raw activity"], dtype=np.float)
             data["time"] = np.array(data["time"], dtype=np.float)
             clone[machine] = data
 

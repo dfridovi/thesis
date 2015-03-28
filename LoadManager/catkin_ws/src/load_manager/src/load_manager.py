@@ -369,7 +369,8 @@ def genericCPUCallback(data, machine_id):
     load_data[machine_id]["isIdle"] = isIdle(machine_id)
 
     history.updateMachine(machine_id, 
-                          load_data[machine_id]["activity"].output())
+                          raw_cpu=float(data.data),
+                          filtered_cpu=load_data[machine_id]["activity"].output())
 #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
 #                  str((load_data[machine_id]["activity"].output(), 
 #                       float(data.data))))
