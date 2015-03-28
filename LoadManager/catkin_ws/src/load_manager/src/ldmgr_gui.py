@@ -1,55 +1,61 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""
+Skeleton UI for load manager.
+"""
 
 import sys
 from PyQt4 import QtGui
 
-"""
-ZetCode PyQt4 tutorial 
-
-In this example, we create a skeleton
-of a calculator using a QtGui.QGridLayout.
-
-author: Jan Bodnar
-website: zetcode.com 
-last edited: July 2014
-"""
-
-class Example(QtGui.QWidget):
+class LoadManagerUI(QtGui.QWidget):
     
     def __init__(self):
-        super(Example, self).__init__()
-        
+        super(LoadManagerUI, self).__init__()
         self.initUI()
+                
+    def initUI(self):      
+
+        self.red = QtGui.QColor(255, 0, 0)
+        self.green = QtGui.QColor(0, 255, 0)
+
+        self.square1 = QtGui.QFrame(self)
+        self.square1.setGeometry(20, 20, 100, 100)
+        self.square1.setStyleSheet("QWidget { background-color: %s }" %  
+            self.red.name())
+
+        self.square2 = QtGui.QFrame(self)
+        self.square2.setGeometry(150, 20, 100, 100)
+        self.square2.setStyleSheet("QWidget { background-color: %s }" %  
+            self.green.name())
         
-    def initUI(self):
-        
-        grid = QtGui.QGridLayout()
-        self.setLayout(grid)
- 
-        names = ['Cls', 'Bck', '', 'Close',
-                 '7', '8', '9', '/',
-                '4', '5', '6', '*',
-                 '1', '2', '3', '-',
-                '0', '.', '=', '+']
-        
-        positions = [(i,j) for i in range(5) for j in range(4)]
-        
-        for position, name in zip(positions, names):
-            
-            if name == '':
-                continue
-            button = QtGui.QPushButton(name)
-            grid.addWidget(button, *position)
-            
-        self.move(300, 150)
-        self.setWindowTitle('Calculator')
+        self.setGeometry(300, 300, 280, 170)
+        self.setWindowTitle('Toggle button')
         self.show()
         
+        
+    def setColor(self, pressed):
+        
+        source = self.sender()
+        
+        if pressed:
+            val = 255
+        else: val = 0
+                        
+        if source.text() == "Red":
+            self.col.setRed(val)                
+        elif source.text() == "Green":
+            self.col.setGreen(val)             
+        else:
+            self.col.setBlue(val) 
+            
+        self.square.setStyleSheet("QFrame { background-color: %s }" %
+            self.col.name())  
+            
+        
 def main():
+    
     app = QtGui.QApplication(sys.argv)
-    ex = Example()
+    ex = LoadManagerUI()
     sys.exit(app.exec_())
 
+
 if __name__ == '__main__':
-    main()
+    main()    
