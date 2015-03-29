@@ -34,7 +34,8 @@ class DataCollector:
 
         stamp = time.time() - self.initTime
         if machine in self.activity.keys():
-            if "processes" in self.activity[machine].keys():
+            if (("processes" in self.activity[machine].keys()) and 
+                (process in self.activity[machine]["processes"].keys())):
                 self.activity[machine]["processes"][process].append(stamp)
             else:
                 self.activity[machine]["processes"] = {process : [stamp]}

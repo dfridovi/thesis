@@ -13,11 +13,14 @@ class LoadManagerUI(QtGui.QWidget):
                 
     def initUI(self):      
 
+        FRAME_H = 600
+        FRAME_W = 600
+
         self.red = QtGui.QColor(255, 0, 0)
         self.green = QtGui.QColor(0, 255, 0)
 
         self.square1 = QtGui.QFrame(self)
-        self.square1.setGeometry(20, 20, 100, 100)
+        self.square1.setGeometry(FRAME_H - 20, FRAME_H, 100, 100)
         self.square1.setStyleSheet("QWidget { background-color: %s }" %  
             self.red.name())
 
@@ -26,7 +29,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.square2.setStyleSheet("QWidget { background-color: %s }" %  
             self.green.name())
         
-        self.setGeometry(300, 300, 280, 170)
+        self.setGeometry(300, 300, FRAME_H, FRAME_W)
         self.setWindowTitle('Toggle button')
         self.show()
         
