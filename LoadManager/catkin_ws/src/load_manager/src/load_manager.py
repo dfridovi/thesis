@@ -17,7 +17,10 @@ from filterCPU import FilterCPU
 from dataCollector import DataCollector
 from topicCacher import PositionTracker, GoalTracker
 from manualsignals import ManualSignal
+from ldgmr_gui import LoadManagerUI
 
+# set up user interface
+ui = LoadManagerUI()
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
@@ -149,8 +152,10 @@ def isIdle(machine_id):
     idle = load_data[machine_id]["isIdle"]
  
     if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
+        ui.updateIdleness(machine_id, not idle)
         return not idle
     else:
+        ui.updateIdleness(machine_id, idle)
         return idle
         
 def findIdleMachine():
@@ -223,6 +228,8 @@ def launchTasks():
         for task in marked_processes:
             print ("********************** Killing process on " + 
                    task["machine"]["id"] + ": " + task["command"])
+            ui.updateProcesses(task["machine"]["id"], 
+                               "Killing: " + task["command"])
             process_queue.remove(task)
             task["process"].terminate() # don't bother waiting
 
@@ -237,7 +244,8 @@ def launchTasks():
                 
             print ("********************** Launching process on " + 
                       command["machine"]["id"] + ": " + command["command"])     
-			
+            ui.updateProcesses(command["machine"]["id"], 
+                               "Launching: " + command["command"])			
             # execute
             executeCommand(command)
 
@@ -371,6 +379,8 @@ def genericCPUCallback(data, machine_id):
     history.updateMachine(machine_id, 
                           raw_cpu=float(data.data),
                           filtered_cpu=load_data[machine_id]["activity"].output())
+    ui.updateCPU(machine_id, load_data[machine_id]["activity"].output())
+
 #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
 #                  str((load_data[machine_id]["activity"].output(), 
 #                       float(data.data))))
