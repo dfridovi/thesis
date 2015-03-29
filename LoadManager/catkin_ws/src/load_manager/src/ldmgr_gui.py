@@ -5,6 +5,9 @@ Skeleton UI for load manager.
 import sys
 from PyQt4 import QtGui
 
+SQUIRREL_ID = "10_9_160_238"
+ASDF_ID = "10_8_190_94"
+
 class LoadManagerUI(QtGui.QWidget):
     
     def __init__(self):
@@ -13,48 +16,140 @@ class LoadManagerUI(QtGui.QWidget):
                 
     def initUI(self):      
 
-        FRAME_H = 600
-        FRAME_W = 600
+        FRAME_H = 650
+        FRAME_W = 1000
+        SQUARE_SIDE = 100
+        TEXT_W = 400
+        CPU_H = 50
+        PROCESS_H = 300
 
         self.red = QtGui.QColor(255, 0, 0)
         self.green = QtGui.QColor(0, 255, 0)
 
+        # set up color coded squares for idleness
+        self.square1lbl = QtGui.QLabel('Idle?', self)
+        self.square1lbl.move(FRAME_W/4 - SQUARE_SIDE/2 - 40, 
+                             FRAME_H - (55 + SQUARE_SIDE/2))
         self.square1 = QtGui.QFrame(self)
-        self.square1.setGeometry(FRAME_H - 20, FRAME_H, 100, 100)
+        self.square1.setGeometry(FRAME_W/4 - SQUARE_SIDE/2, 
+                                 FRAME_H - (50+SQUARE_SIDE), 
+                                 SQUARE_SIDE, SQUARE_SIDE)
         self.square1.setStyleSheet("QWidget { background-color: %s }" %  
-            self.red.name())
+                                   self.green.name())
 
+        self.square2lbl = QtGui.QLabel('Idle?', self)
+        self.square2lbl.move(FRAME_W*3/4 - SQUARE_SIDE/2 - 40, 
+                             FRAME_H - (55 + SQUARE_SIDE/2))
         self.square2 = QtGui.QFrame(self)
-        self.square2.setGeometry(150, 20, 100, 100)
+        self.square2.setGeometry(FRAME_W*3/4 - SQUARE_SIDE/2, 
+                                 FRAME_H - (50+SQUARE_SIDE), 
+                                 SQUARE_SIDE, SQUARE_SIDE)
         self.square2.setStyleSheet("QWidget { background-color: %s }" %  
-            self.green.name())
+                                   self.green.name())
         
-        self.setGeometry(300, 300, FRAME_H, FRAME_W)
-        self.setWindowTitle('Toggle button')
+        # set up text boxes for CPU monitoring
+        self.cpu1lbl = QtGui.QLabel('CPU Percentage', self)
+        self.cpu1lbl.move(FRAME_W/4 - TEXT_W/2, 
+                          FRAME_H - (120 + CPU_H + SQUARE_SIDE))
+        self.cpu1 = QtGui.QTextEdit(self)
+        self.cpu1.setReadOnly(True)
+        self.cpu1.setLineWrapMode(QtGui.QTextEdit.NoWrap);
+        self.cpu1.setGeometry(FRAME_W/4 - TEXT_W/2, 
+                              FRAME_H - (100 + CPU_H + SQUARE_SIDE), 
+                              TEXT_W, CPU_H)
+
+        self.cpu2lbl = QtGui.QLabel('CPU Percentage', self)
+        self.cpu2lbl.move(FRAME_W*3/4 - TEXT_W/2, 
+                          FRAME_H - (120 + CPU_H + SQUARE_SIDE))
+        self.cpu2 = QtGui.QTextEdit(self)
+        self.cpu2.setReadOnly(True)
+        self.cpu2.setLineWrapMode(QtGui.QTextEdit.NoWrap);
+        self.cpu2.setGeometry(FRAME_W*3/4 - TEXT_W/2, 
+                              FRAME_H - (100 + CPU_H + SQUARE_SIDE), 
+                              TEXT_W, CPU_H)
+
+        cpu1sb = self.cpu1.verticalScrollBar()
+        cpu2sb = self.cpu2.verticalScrollBar()
+
+        # set up text boxes for process monitoring
+        self.process1lbl = QtGui.QLabel('Active Processes', self)
+        self.process1lbl.move(FRAME_W/4 - TEXT_W/2, 
+                              FRAME_H - (170 + PROCESS_H + CPU_H + SQUARE_SIDE))
+        self.process1 = QtGui.QTextEdit(self)
+        self.process1.setReadOnly(True)
+        self.process1.setLineWrapMode(QtGui.QTextEdit.NoWrap);
+        self.process1.setGeometry(FRAME_W/4 - TEXT_W/2, 
+                                  FRAME_H - (150 + PROCESS_H + CPU_H + SQUARE_SIDE), 
+                                  TEXT_W, PROCESS_H)
+
+        self.process2lbl = QtGui.QLabel('Active Processes', self)
+        self.process2lbl.move(FRAME_W*3/4 - TEXT_W/2, 
+                              FRAME_H - (170 + PROCESS_H + CPU_H + SQUARE_SIDE))
+        self.process2 = QtGui.QTextEdit(self)
+        self.process2.setReadOnly(True)
+        self.process2.setLineWrapMode(QtGui.QTextEdit.NoWrap);
+        self.process2.setGeometry(FRAME_W*3/4 - TEXT_W/2, 
+                                  FRAME_H - (150 + PROCESS_H + CPU_H + SQUARE_SIDE), 
+                                  TEXT_W, PROCESS_H)
+
+        process1sb = self.process1.verticalScrollBar()
+        process2sb = self.process2.verticalScrollBar()
+
+        # set machine names
+        self.machine1lbl = QtGui.QLabel('SQUIRREL', self)
+        self.machine1lbl.move(FRAME_W/4 - 40, 
+                              FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
+
+        self.machine2lbl = QtGui.QLabel('ASDF', self)
+        self.machine2lbl.move(FRAME_W*3/4 - 20, 
+                              FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
+
+        # set up main frame
+        self.setGeometry(300, 300, FRAME_W, FRAME_H)
+        self.setWindowTitle('Load Manager')
         self.show()
-        
-        
-    def setColor(self, pressed):
-        
-        source = self.sender()
-        
-        if pressed:
-            val = 255
-        else: val = 0
-                        
-        if source.text() == "Red":
-            self.col.setRed(val)                
-        elif source.text() == "Green":
-            self.col.setGreen(val)             
-        else:
-            self.col.setBlue(val) 
-            
-        self.square.setStyleSheet("QFrame { background-color: %s }" %
-            self.col.name())  
-            
-        
-def main():
+
+    def updateIdleness(self, machine, isIdle):
+        """ Change square colors to match machine idleness. """
+
+        if (machine == SQUIRREL_ID) and isIdle:
+            self.square1.setStyleSheet("QWidget { background-color: %s }" %  
+                                       self.green.name())                
+        if (machine == SQUIRREL_ID) and not isIdle:
+            self.square1.setStyleSheet("QWidget { background-color: %s }" %  
+                                       self.red.name())                
+        if (machine == ASDF_ID) and isIdle:
+            self.square2.setStyleSheet("QWidget { background-color: %s }" %  
+                                       self.green.name())                
+        if (machine == ASDF_ID) and not isIdle:
+            self.square2.setStyleSheet("QWidget { background-color: %s }" %  
+                                       self.red.name())                
+
+    def updateCPU(self, machine, cpu):
+        """ Change text of cpu box. """
+
+        if machine == SQUIRREL_ID:
+            self.cpu1.moveCursor(QtGui.QTextCursor.End)
+            self.cpu1.insertPlainText(str(cpu))
+            cpu1sb.setValue(cpu1sb.maximum())
+        if machine == ASDF_ID:
+            self.cpu2.moveCursor(QtGui.QTextCursor.End)
+            self.cpu2.insertPlainText(str(cpu))
+            cpu2sb.setValue(cpu1sb.maximum())
     
+    def updateProcesses(self, machine, process):
+        """ Change text of processes box. """
+
+        if machine == SQUIRREL_ID:
+            self.process1.moveCursor(QtGui.QTextCursor.End)
+            self.process1.insertPlainText(process)
+            process1sb.setValue(process1sb.maximum())
+        if machine == ASDF_ID:
+            self.process2.moveCursor(QtGui.QTextCursor.End)
+            self.process2.insertPlainText(process)
+            process2sb.setValue(process2sb.maximum())
+            
+def main():
     app = QtGui.QApplication(sys.argv)
     ex = LoadManagerUI()
     sys.exit(app.exec_())
