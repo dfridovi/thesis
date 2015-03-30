@@ -13,14 +13,19 @@ import pubgoal
 from move_base_msgs import *
 from collections import deque
 
+import sys
+from PyQt4 import QtGui
+
 from filterCPU import FilterCPU
 from dataCollector import DataCollector
 from topicCacher import PositionTracker, GoalTracker
 from manualsignals import ManualSignal
-from ldgmr_gui import LoadManagerUI
+from ldmgrGUI import LoadManagerUI
 
 # set up user interface
+app = QtGui.QApplication(sys.argv)
 ui = LoadManagerUI()
+sys.exit(app.exec_())
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
