@@ -161,9 +161,15 @@ class LoadManagerUI(QtGui.QWidget):
 
         # set up start button
         self.start = QtGui.QPushButton('Start!', self)
-        self.start.clicked.connect(self.launchtest)
+        self.start.clicked.connect(self.run)
         self.start.move(FRAME_W/2 - 40,
                         FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
+
+        # set up quit button
+        self.kill = QtGui.QPushButton('Exit', self)
+        self.kill.clicked.connect(self.killAll)
+        self.kill.move(FRAME_W/2 - 40,
+                       FRAME_H - (140 + PROCESS_H + CPU_H + SQUARE_SIDE))
 
         # set up main frame
         self.setGeometry(300, 300, FRAME_W, FRAME_H)
@@ -172,13 +178,13 @@ class LoadManagerUI(QtGui.QWidget):
 
     def junk(self, mach, val):
         self.updateIdleness(mach, val)
+        print "hi"
         time.sleep(1)
+        self.junk(mach, not val)
 
-    def launchtest(self):
-        self.junk(SQUIRREL_ID, False)
-        print "1"
-        self.junk(ASDF_ID, False)
-        print "2"
+    def run(self):
+        t = threading.Thread(target=self.launch)
+        t.start()
 
     def launch(self):
         """ Launch load manager. """
@@ -310,10 +316,10 @@ class LoadManagerUI(QtGui.QWidget):
         idle = self.load_data[machine_id]["isIdle"]
      
         if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
-            #self.updateIdleness(machine_id, not idle)
+            self.updateIdleness(machine_id, not idle)
             return not idle
         else:
-            #self.updateIdleness(machine_id, idle)
+            self.updateIdleness(machine_id, idle)
             return idle
             
     def findIdleMachine(self):
@@ -386,7 +392,7 @@ class LoadManagerUI(QtGui.QWidget):
             for task in marked_processes:
                 print ("********************** Killing process on " + 
                        task["machine"]["id"] + ": " + task["command"])
-                #self.updateProcesses(task["machine"]["id"], "Killing: " + task["command"] + "\n")
+                self.updateProcesses(task["machine"]["id"], "Killing: " + task["command"] + "\n")
                 self.process_queue.remove(task)
                 task["process"].terminate() # don't bother waiting
 
@@ -401,7 +407,7 @@ class LoadManagerUI(QtGui.QWidget):
                     
                 print ("********************** Launching process on " + 
                         command["machine"]["id"] + ": " + command["command"])     
-                #self.updateProcesses(command["machine"]["id"], "Launching: " + command["command"] + "\n")          
+                self.updateProcesses(command["machine"]["id"], "Launching: " + command["command"] + "\n")          
                 # execute
                 self.executeCommand(command)
 
