@@ -8,11 +8,12 @@ import cPickle as pickle
 
 class DataCollector:
     
-    def __init__(self):
+    def __init__(self, filename):
         """ Initialize to empty. """
 
         self.initTime = time.time()
         self.activity = {}
+        self.filename = filename
 
     def updateMachine(self, machine, raw_cpu, filtered_cpu):
         """ Keep track of machine activity with time stamps. """
@@ -45,7 +46,7 @@ class DataCollector:
                                       "time" : [],
                                       "processes" : {process : [stamp]}}
 
-    def save(self, filename):
+    def save(self):
         """ 
         Convert to numpy arrays and pickle to the specified file. 
         """
@@ -60,6 +61,6 @@ class DataCollector:
             data["time"] = np.array(data["time"], dtype=np.float)
             clone[machine] = data
 
-        out = open(filename, "wb")
+        out = open(self.filename, "wb")
         pickle.dump(clone, out)
         out.close()

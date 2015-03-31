@@ -68,9 +68,9 @@ position = None
 goal = None
 signal = None
 
-history = DataCollector()
 PATH = "/home/ubuntu/thesis/LoadManager/data/"
 HIST_FILE = PATH + "history_file_" + str(time.time()) + ".pkl"
+history = DataCollector(HIST_FILE)
 
 command_queue = deque()
 process_queue = deque()
@@ -409,7 +409,7 @@ def killAll():
 
     # save system history
     print "\nSaving system history to file {}".format(HIST_FILE)
-    history.save(HIST_FILE)
+    history.save()
         
 # main script
 if __name__ == "__main__":

@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 """
-GUI version of load_manager
+GUI version of load_manager.
 """
+
 
 import sys
 from PyQt4 import QtGui
@@ -111,7 +114,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.show()
 
         # launch load manager
-        self.ldmgr = LoadManager()
+        self.ldmgr = LoadManager(self)
 
     def updateIdleness(self, machine, isIdle):
         """ Change square colors to match machine idleness. """
