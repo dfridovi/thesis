@@ -90,14 +90,14 @@ class LoadManager:
             machine = MACHINES[machine_id]
             
             if machine["ssh"] is None:
-                machine["ssh"] = openSSH(machine["usr"], machine["ip"])
+                machine["ssh"] = self.openSSH(machine["usr"], machine["ip"])
 
 
         print "Launching roscore..."
-        executeCommand({"machine" : SQUIRREL,
-                        "command" : ROSCORE,
-                        "catchOut" : CATCH_NODES,
-                        "isMovable" : False})
+        self.executeCommand({"machine" : SQUIRREL,
+                             "command" : ROSCORE,
+                             "catchOut" : CATCH_NODES,
+                             "isMovable" : False})
 
     def openSSH(self, usr, ip, catch_output=False):
         """ Open an SSH connection to the specified machine. """
@@ -124,9 +124,9 @@ class LoadManager:
         self.process_queue.append(command)
 
         # get new ssh shell for this machine
-        newssh = openSSH(command["machine"]["usr"], 
-                         command["machine"]["ip"],
-                         command["catchOut"])
+        newssh = self.openSSH(command["machine"]["usr"], 
+                              command["machine"]["ip"],
+                              command["catchOut"])
         command["machine"]["ssh"] = newssh
 
         # sleep
@@ -374,7 +374,7 @@ class LoadManager:
         """
 
         self.load_data[machine_id]["activity"].update(float(data.data))
-        self.load_data[machine_id]["isIdle"] = isIdle(machine_id)
+        self.load_data[machine_id]["isIdle"] = self.isIdle(machine_id)
 
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
@@ -410,13 +410,13 @@ class LoadManager:
         
         # wait, then forceably kill all remaining processes
         dead, alive = psutil.wait_procs(process_list, timeout=5, 
-                                        callback=onTerminateCallback)
+                                        callback=self.onTerminateCallback)
         for process in alive:
             process.kill()
 
         # save system history
-        print "\nSaving system history to file {}".format(HIST_FILE)
-        self.history.save(HIST_FILE)
+        print "\nSaving system history to file."
+        self.history.save()
         
     # main script
     def main(self):
