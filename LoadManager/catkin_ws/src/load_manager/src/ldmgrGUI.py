@@ -6,7 +6,7 @@ GUI version of load_manager.
 
 
 import sys
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 import time, sys, os, functools
 import psutil, subprocess
@@ -62,6 +62,15 @@ UPDATE_INTERVAL = 1
 CPU_LO = 25.0
 CPU_HI = 90.0
 CATCH_NODES = False
+
+class LoadManagerThread(QtCore.QThread):
+
+    def __init__(self, ui):
+        super(LoadManagerThread, self).__init__()
+        self.ui = ui
+
+    def run(self):
+        self.ui.launch()
 
 class LoadManagerUI(QtGui.QWidget):
     
@@ -183,8 +192,13 @@ class LoadManagerUI(QtGui.QWidget):
         self.junk(mach, not val)
 
     def run(self):
-        t = threading.Thread(target=self.launch)
-        t.start()
+        #t = threading.Thread(target=self.launch)
+        #t.start()
+        #self.app = QtCore.QCoreApplication([])
+#        self.t = LoadManagerThread(self)
+        #self.t.finished.connect(app.exit)
+#        self.t.start()
+        self.launch()
 
     def launch(self):
         """ Launch load manager. """
@@ -205,6 +219,9 @@ class LoadManagerUI(QtGui.QWidget):
 
         # system time
         self.start_time = time.time()
+        self.timer = QtCore.QTimer()
+        QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.launchTasks)
+
 
         # launch the load manager
         try:
@@ -236,13 +253,13 @@ class LoadManagerUI(QtGui.QWidget):
             
             # set up and launch all tasks
             self.navigationSetup()
-            self.launchTasks()
+            self.timer.start(UPDATE_INTERVAL * 1000)
+#            self.launchTasks()
 
         except KeyboardInterrupt:
           
             # terminate all processes gently
             self.killAll()
-            sys.exit()
 
     def initLoadManager(self):
         """ Create SSH shells and launch roscore on SQUIRREL."""
@@ -316,10 +333,10 @@ class LoadManagerUI(QtGui.QWidget):
         idle = self.load_data[machine_id]["isIdle"]
      
         if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
-            self.updateIdleness(machine_id, not idle)
+            #self.updateIdleness(machine_id, not idle)
             return not idle
         else:
-            self.updateIdleness(machine_id, idle)
+            #self.updateIdleness(machine_id, idle)
             return idle
             
     def findIdleMachine(self):
@@ -358,72 +375,71 @@ class LoadManagerUI(QtGui.QWidget):
            sure to edit the amcl launch file if needed.
         """
 
-        while True:
+        # keep a list of processes to be killed
+        marked_processes = []
+        
+        # check process_queue
+        for task in self.process_queue:
             
-            # keep a list of processes to be killed
-            marked_processes = []
-            
-            # check process_queue
-            for task in self.process_queue:
+            # check if movable
+            if task["isMovable"]:
                     
-                # check if movable
-                if task["isMovable"]:
-                    
-                    # check if machine is not idle anymore and remove
-                    machine = task["machine"]
-                    if not self.load_data[machine["id"]]["isIdle"] or self.signal.message() == "switch":
+                # check if machine is not idle anymore and remove
+                machine = task["machine"]
+                if not self.load_data[machine["id"]]["isIdle"] or self.signal.message() == "switch":
                         
-                        # find (the most) idle machine
-                        idle_machine = self.findIdleMachine()
-                        self.signal.clear()
-                        # only move the process if there is an idle machine on the network
-                        if idle_machine is not None:
+                    # find (the most) idle machine
+                    idle_machine = self.findIdleMachine()
+                    self.signal.clear()
 
-                            # mark and remove later
-                            marked_processes.append(task)
-                                
-                            # change info
-                            new_task = task.copy()
-                            new_task["machine"] = idle_machine
-                            new_task["process"] = None
-                            self.command_queue.append(new_task)
-                                
-            # now kill all marked processes
-            for task in marked_processes:
-                print ("********************** Killing process on " + 
-                       task["machine"]["id"] + ": " + task["command"])
-                self.updateProcesses(task["machine"]["id"], "Killing: " + task["command"] + "\n")
-                self.process_queue.remove(task)
-                task["process"].terminate() # don't bother waiting
+                    # only move the process if there is an idle machine on the network
+                    if idle_machine is not None:
 
-            # now check command_queue and launch
-            while len(self.command_queue) > 0:
-                command = self.command_queue.popleft()
+                        # mark and remove later
+                        marked_processes.append(task)
+                                
+                        # change info
+                        new_task = task.copy()
+                        new_task["machine"] = idle_machine
+                        new_task["process"] = None
+                        self.command_queue.append(new_task)
+                                
+        # now kill all marked processes
+        for task in marked_processes:
+            print ("********************** Killing process on " + 
+                   task["machine"]["id"] + ": " + task["command"])
+            self.updateProcesses(task["machine"]["id"], "Killing: " + task["command"] + "\n")
+            self.process_queue.remove(task)
+            task["process"].terminate() # don't bother waiting
+
+        # now check command_queue and launch
+        while len(self.command_queue) > 0:
+            command = self.command_queue.popleft()
                 
-                # adjust amcl launch file if needed
-                print self.goal.goal()
-                if command["command"] == AMCL_LAUNCH:
-                    self.initPosition(command["machine"])
+            # adjust amcl launch file if needed
+            print self.goal.goal()
+            if command["command"] == AMCL_LAUNCH:
+                self.initPosition(command["machine"])
                     
-                print ("********************** Launching process on " + 
-                        command["machine"]["id"] + ": " + command["command"])     
-                self.updateProcesses(command["machine"]["id"], "Launching: " + command["command"] + "\n")          
-                # execute
-                self.executeCommand(command)
-
-                if command["command"] == AMCL_LAUNCH and self.goal.goal() != None:
-                    self.pubgoal.simple_move(goal.goal()) 
+            print ("********************** Launching process on " + 
+                   command["machine"]["id"] + ": " + command["command"])     
+            self.updateProcesses(command["machine"]["id"], "Launching: " + command["command"] + "\n")          
                 
-            # print state of all processes
-            self.printState()
+            # execute
+            self.executeCommand(command)
+                
+            if command["command"] == AMCL_LAUNCH and self.goal.goal() != None:
+                self.pubgoal.simple_move(goal.goal()) 
+                
+        # print state of all processes
+        self.printState()
 
-            print "Robot At:"
-            print self.position.position()
-
-            # tic
-            print "--------------------------------------------------------------------------"
-            time.sleep(UPDATE_INTERVAL)
-
+        print "Robot At:"
+        print self.position.position()
+        
+        # tic
+        print "--------------------------------------------------------------------------"
+        
     def initPosition(self, machine):
         """ 
         SSH into machine and alter amcl_demo_edited.launch file to include 
@@ -538,7 +554,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
                               filtered_cpu=self.load_data[machine_id]["activity"].output())
-        self.updateCPU(machine_id, str(self.load_data[machine_id]["activity"].output()) + "\n")
+        #self.updateCPU(machine_id, str(self.load_data[machine_id]["activity"].output()) + "\n")
 
     #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
     #                  str((load_data[machine_id]["activity"].output(), 
@@ -576,7 +592,7 @@ class LoadManagerUI(QtGui.QWidget):
         # save system history
         print "\nSaving system history to file."
         self.history.save()
-
+        sys.exit()
 
     def updateIdleness(self, machine, isIdle):
         """ Change square colors to match machine idleness. """
