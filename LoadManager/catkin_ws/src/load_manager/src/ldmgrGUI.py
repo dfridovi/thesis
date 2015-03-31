@@ -68,8 +68,8 @@ class LoadManagerUI(QtGui.QWidget):
                               FRAME_H - (100 + CPU_H + SQUARE_SIDE), 
                               TEXT_W, CPU_H)
 
-        cpu1sb = self.cpu1.verticalScrollBar()
-        cpu2sb = self.cpu2.verticalScrollBar()
+        self.cpu1sb = self.cpu1.verticalScrollBar()
+        self.cpu2sb = self.cpu2.verticalScrollBar()
 
         # set up text boxes for process monitoring
         self.process1lbl = QtGui.QLabel('Active Processes', self)
@@ -92,8 +92,8 @@ class LoadManagerUI(QtGui.QWidget):
                                   FRAME_H - (150 + PROCESS_H + CPU_H + SQUARE_SIDE), 
                                   TEXT_W, PROCESS_H)
 
-        process1sb = self.process1.verticalScrollBar()
-        process2sb = self.process2.verticalScrollBar()
+        self.process1sb = self.process1.verticalScrollBar()
+        self.process2sb = self.process2.verticalScrollBar()
 
         # set machine names
         self.machine1lbl = QtGui.QLabel('SQUIRREL', self)
@@ -108,6 +108,9 @@ class LoadManagerUI(QtGui.QWidget):
         self.setGeometry(300, 300, FRAME_W, FRAME_H)
         self.setWindowTitle('Load Manager')
         self.show()
+
+        # launch load manager
+        self.ldmgr = LoadManager()
 
     def updateIdleness(self, machine, isIdle):
         """ Change square colors to match machine idleness. """
@@ -131,11 +134,11 @@ class LoadManagerUI(QtGui.QWidget):
         if machine == SQUIRREL_ID:
             self.cpu1.moveCursor(QtGui.QTextCursor.End)
             self.cpu1.insertPlainText(str(cpu))
-            cpu1sb.setValue(cpu1sb.maximum())
+            self.cpu1sb.setValue(self.cpu1sb.maximum())
         if machine == ASDF_ID:
             self.cpu2.moveCursor(QtGui.QTextCursor.End)
             self.cpu2.insertPlainText(str(cpu))
-            cpu2sb.setValue(cpu1sb.maximum())
+            self.cpu2sb.setValue(self.cpu1sb.maximum())
     
     def updateProcesses(self, machine, process):
         """ Change text of processes box. """
@@ -143,11 +146,11 @@ class LoadManagerUI(QtGui.QWidget):
         if machine == SQUIRREL_ID:
             self.process1.moveCursor(QtGui.QTextCursor.End)
             self.process1.insertPlainText(process)
-            process1sb.setValue(process1sb.maximum())
+            self.process1sb.setValue(self.process1sb.maximum())
         if machine == ASDF_ID:
             self.process2.moveCursor(QtGui.QTextCursor.End)
             self.process2.insertPlainText(process)
-            process2sb.setValue(process2sb.maximum())
+            self.process2sb.setValue(self.process2sb.maximum())
             
 def main():
     app = QtGui.QApplication(sys.argv)

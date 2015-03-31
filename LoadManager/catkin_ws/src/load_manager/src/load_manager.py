@@ -25,7 +25,7 @@ from ldmgrGUI import LoadManagerUI
 # set up user interface
 app = QtGui.QApplication(sys.argv)
 ui = LoadManagerUI()
-sys.exit(app.exec_())
+#sys.exit(app.exec_())
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
