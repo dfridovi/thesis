@@ -22,6 +22,7 @@ from dataCollector import DataCollector
 from topicCacher import PositionTracker, GoalTracker
 from manualsignals import ManualSignal
 
+import threading
 
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
@@ -160,7 +161,7 @@ class LoadManagerUI(QtGui.QWidget):
 
         # set up start button
         self.start = QtGui.QPushButton('Start!', self)
-        self.start.clicked.connect(self.run)
+        self.start.clicked.connect(self.launchtest)
         self.start.move(FRAME_W/2 - 40,
                         FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
 
@@ -169,7 +170,17 @@ class LoadManagerUI(QtGui.QWidget):
         self.setWindowTitle('Load Manager')
         self.show()
 
-    def run(self):
+    def junk(self, mach, val):
+        self.updateIdleness(mach, val)
+        time.sleep(1)
+
+    def launchtest(self):
+        self.junk(SQUIRREL_ID, False)
+        print "1"
+        self.junk(ASDF_ID, False)
+        print "2"
+
+    def launch(self):
         """ Launch load manager. """
 
         # store load data, system history, commands, and launched processes
@@ -299,10 +310,10 @@ class LoadManagerUI(QtGui.QWidget):
         idle = self.load_data[machine_id]["isIdle"]
      
         if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
-            self.updateIdleness(machine_id, not idle)
+            #self.updateIdleness(machine_id, not idle)
             return not idle
         else:
-            self.updateIdleness(machine_id, idle)
+            #self.updateIdleness(machine_id, idle)
             return idle
             
     def findIdleMachine(self):
@@ -375,8 +386,7 @@ class LoadManagerUI(QtGui.QWidget):
             for task in marked_processes:
                 print ("********************** Killing process on " + 
                        task["machine"]["id"] + ": " + task["command"])
-                self.updateProcesses(task["machine"]["id"], 
-                                        "Killing: " + task["command"] + "\n")
+                #self.updateProcesses(task["machine"]["id"], "Killing: " + task["command"] + "\n")
                 self.process_queue.remove(task)
                 task["process"].terminate() # don't bother waiting
 
@@ -391,8 +401,7 @@ class LoadManagerUI(QtGui.QWidget):
                     
                 print ("********************** Launching process on " + 
                         command["machine"]["id"] + ": " + command["command"])     
-                self.updateProcesses(command["machine"]["id"], 
-                                        "Launching: " + command["command"] + "\n")          
+                #self.updateProcesses(command["machine"]["id"], "Launching: " + command["command"] + "\n")          
                 # execute
                 self.executeCommand(command)
 
@@ -523,8 +532,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
                               filtered_cpu=self.load_data[machine_id]["activity"].output())
-        self.updateCPU(machine_id, 
-                          str(self.load_data[machine_id]["activity"].output()) + "\n")
+        self.updateCPU(machine_id, str(self.load_data[machine_id]["activity"].output()) + "\n")
 
     #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
     #                  str((load_data[machine_id]["activity"].output(), 
