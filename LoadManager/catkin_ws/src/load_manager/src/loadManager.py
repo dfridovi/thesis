@@ -17,6 +17,8 @@ from dataCollector import DataCollector
 from topicCacher import PositionTracker, GoalTracker
 from manualsignals import ManualSignal
 
+from PyQt4 import QtCore
+
 # set up machines
 SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
@@ -56,10 +58,17 @@ CPU_LO = 25.0
 CPU_HI = 90.0
 CATCH_NODES = False
 
-class LoadManager:
+class LoadManager(QtCore.QObject):
+
+    cpu_signal = QtCore.pyqtSignal((str), (float))
+    process_signal = QtCore.pyqtSignal((str), (str))
+    idle_signal = QtCore.pyqtSignal((str), (bool))
 
     def __init__(self, ui):
       
+        super(LoadManager, self).__init__()
+        #QtCore.QObject.__init__()
+
         # store the UI
         self.ui = ui
 
@@ -79,6 +88,11 @@ class LoadManager:
 
         # system time
         self.start_time = time.time()
+
+        # set up signals and slots with GUI
+        self.cpu_signal.connect(self.ui.updateCPU)
+        self.process_signal.connect(self.ui.updateProcesses)
+        self.idle_signal.connect(self.ui.updateIdleness)
 
         # launch the load manager
         self.main()
@@ -155,10 +169,10 @@ class LoadManager:
         idle = self.load_data[machine_id]["isIdle"]
      
         if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
-            self.ui.updateIdleness(machine_id, not idle)
+            self.idle_signal.emit(machine_id, not idle)
             return not idle
         else:
-            self.ui.updateIdleness(machine_id, idle)
+            self.idle_signal.emit(machine_id, idle)
             return idle
             
     def findIdleMachine(self):
@@ -231,7 +245,7 @@ class LoadManager:
             for task in marked_processes:
                 print ("********************** Killing process on " + 
                        task["machine"]["id"] + ": " + task["command"])
-                self.ui.updateProcesses(task["machine"]["id"], 
+                self.process_signal.emit(task["machine"]["id"], 
                                         "Killing: " + task["command"] + "\n")
                 self.process_queue.remove(task)
                 task["process"].terminate() # don't bother waiting
@@ -247,8 +261,9 @@ class LoadManager:
                     
                 print ("********************** Launching process on " + 
                         command["machine"]["id"] + ": " + command["command"])     
-                self.ui.updateProcesses(command["machine"]["id"], 
-                                        "Launching: " + command["command"] + "\n")			
+                self.process_signal.emit(command["machine"]["id"], 
+                                         "Launching: " + command["command"] + "\n")
+
                 # execute
                 self.executeCommand(command)
 
@@ -379,8 +394,8 @@ class LoadManager:
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
                               filtered_cpu=self.load_data[machine_id]["activity"].output())
-        self.ui.updateCPU(machine_id, 
-                          str(self.load_data[machine_id]["activity"].output()) + "\n")
+        self.cpu_signal.emit(machine_id, 
+                             self.load_data[machine_id]["activity"].output())
 
     #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
     #                  str((load_data[machine_id]["activity"].output(), 
@@ -459,3 +474,4 @@ class LoadManager:
             self.killAll()
             sys.exit()
 
+from ldmgrGUI import LoadManagerUI
