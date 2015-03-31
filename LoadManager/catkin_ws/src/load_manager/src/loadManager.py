@@ -66,6 +66,8 @@ class LoadManager(QtCore.QObject):
 
     def __init__(self, ui):
       
+        print "hi there"
+
         super(LoadManager, self).__init__()
         #QtCore.QObject.__init__()
 
