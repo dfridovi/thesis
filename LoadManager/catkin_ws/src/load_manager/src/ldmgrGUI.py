@@ -299,10 +299,10 @@ class LoadManagerUI(QtGui.QWidget):
         idle = self.load_data[machine_id]["isIdle"]
      
         if ((idle and (cpu > CPU_HI)) or ((not idle) and (cpu < CPU_LO))):
-            self.ui.updateIdleness(machine_id, not idle)
+            self.updateIdleness(machine_id, not idle)
             return not idle
         else:
-            self.ui.updateIdleness(machine_id, idle)
+            self.updateIdleness(machine_id, idle)
             return idle
             
     def findIdleMachine(self):
@@ -375,7 +375,7 @@ class LoadManagerUI(QtGui.QWidget):
             for task in marked_processes:
                 print ("********************** Killing process on " + 
                        task["machine"]["id"] + ": " + task["command"])
-                self.ui.updateProcesses(task["machine"]["id"], 
+                self.updateProcesses(task["machine"]["id"], 
                                         "Killing: " + task["command"] + "\n")
                 self.process_queue.remove(task)
                 task["process"].terminate() # don't bother waiting
@@ -391,7 +391,7 @@ class LoadManagerUI(QtGui.QWidget):
                     
                 print ("********************** Launching process on " + 
                         command["machine"]["id"] + ": " + command["command"])     
-                self.ui.updateProcesses(command["machine"]["id"], 
+                self.updateProcesses(command["machine"]["id"], 
                                         "Launching: " + command["command"] + "\n")          
                 # execute
                 self.executeCommand(command)
@@ -523,7 +523,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
                               filtered_cpu=self.load_data[machine_id]["activity"].output())
-        self.ui.updateCPU(machine_id, 
+        self.updateCPU(machine_id, 
                           str(self.load_data[machine_id]["activity"].output()) + "\n")
 
     #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
