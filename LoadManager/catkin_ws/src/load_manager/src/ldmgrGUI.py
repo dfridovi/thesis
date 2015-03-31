@@ -108,13 +108,22 @@ class LoadManagerUI(QtGui.QWidget):
         self.machine2lbl.move(FRAME_W*3/4 - 20, 
                               FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
 
+        # set up start button
+        self.start = QtGui.QPushButton('Start!', self)
+        self.start.clicked.connect(self.run)
+        self.start.move(FRAME_W/2 - 40,
+                        FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
+
         # set up main frame
         self.setGeometry(300, 300, FRAME_W, FRAME_H)
         self.setWindowTitle('Load Manager')
         self.show()
 
-        # launch load manager
+    def run(self):
+        """ Launch load manager. """
+
         self.ldmgr = LoadManager(self)
+
 
     def updateIdleness(self, machine, isIdle):
         """ Change square colors to match machine idleness. """

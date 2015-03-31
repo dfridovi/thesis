@@ -232,7 +232,7 @@ class LoadManager:
                 print ("********************** Killing process on " + 
                        task["machine"]["id"] + ": " + task["command"])
                 self.ui.updateProcesses(task["machine"]["id"], 
-                                        "Killing: " + task["command"])
+                                        "Killing: " + task["command"] + "\n")
                 self.process_queue.remove(task)
                 task["process"].terminate() # don't bother waiting
 
@@ -248,7 +248,7 @@ class LoadManager:
                 print ("********************** Launching process on " + 
                         command["machine"]["id"] + ": " + command["command"])     
                 self.ui.updateProcesses(command["machine"]["id"], 
-                                        "Launching: " + command["command"])			
+                                        "Launching: " + command["command"] + "\n")			
                 # execute
                 self.executeCommand(command)
 
@@ -379,7 +379,8 @@ class LoadManager:
         self.history.updateMachine(machine_id, 
                               raw_cpu=float(data.data),
                               filtered_cpu=self.load_data[machine_id]["activity"].output())
-        self.ui.updateCPU(machine_id, self.load_data[machine_id]["activity"].output())
+        self.ui.updateCPU(machine_id, 
+                          str(self.load_data[machine_id]["activity"].output()) + "\n")
 
     #    rospy.loginfo("CPU activity for " + machine_id + ": " + 
     #                  str((load_data[machine_id]["activity"].output(), 
