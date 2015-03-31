@@ -95,6 +95,7 @@ class LoadManager(QtCore.QObject):
         self.idle_signal.connect(self.ui.updateIdleness)
 
         # launch the load manager
+        print "hi"
         self.main()
  
     def init(self):
