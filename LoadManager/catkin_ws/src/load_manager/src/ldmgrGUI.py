@@ -1,9 +1,10 @@
 """
-Skeleton UI for load manager.
+GUI version of load_manager
 """
 
 import sys
 from PyQt4 import QtGui
+from loadManager import LoadManager
 
 SQUIRREL_ID = "10_9_160_238"
 ASDF_ID = "10_8_190_94"
