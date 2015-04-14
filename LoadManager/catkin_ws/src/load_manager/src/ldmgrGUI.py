@@ -156,7 +156,7 @@ class LoadManagerUI(QtGui.QWidget):
         self.junk(mach, not val)
 
     def run(self):
-        self.app = QtCore.QCoreApplication([])
+#        self.app = QtCore.QCoreApplication([])
         self.thread = LoadManagerThread(self)
 #        self.thread.finished.connect(self.app.exit)
         self.thread.start()

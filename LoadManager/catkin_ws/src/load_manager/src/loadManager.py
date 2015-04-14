@@ -54,7 +54,7 @@ FILTER_TAP = 0.995
 FILTER_INIT = 0.0
 WAIT_TIME = 5
 UPDATE_INTERVAL = 1
-CPU_LO = 25.0
+CPU_LO = 60.0
 CPU_HI = 90.0
 CATCH_NODES = False
 
@@ -66,6 +66,8 @@ class LoadManager(QtCore.QObject):
 
     def __init__(self, ui):
       
+        print "hi there"
+
         super(LoadManager, self).__init__()
         #QtCore.QObject.__init__()
 
@@ -95,6 +97,7 @@ class LoadManager(QtCore.QObject):
         self.idle_signal.connect(self.ui.updateIdleness)
 
         # launch the load manager
+        print "hi"
         self.main()
  
     def init(self):
