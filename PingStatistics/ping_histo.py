@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 
 # from: https://raw.githubusercontent.com/pklaus/ping_histo/master/ping_histo.py
+# edited to use matplotlib
 
 import subprocess
 import re
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
+import cPickle as pickle
 
 def mean(values):
     # starting with Python 3.4 there is the module statistics
@@ -51,7 +55,7 @@ def main():
                 if args.debug: print(match.groups())
                 time = float(match.group('time'))
                 times.append(time)
-                print(time)
+                print("%d: %f" % (len(times), time))
                 continue
             match = end_matcher.match(line)
             if match:
@@ -59,6 +63,16 @@ def main():
                 continue
             if args.debug: print("Didn't understand this line: " + line)
     except KeyboardInterrupt:
+        file = open("ping_times.pkl", 'wb')
+        pickle.dump(np.asarray(times, dtype=np.float), file)
+        file.close()
+
+        n, bins, patches = plt.hist(np.asarray(times, dtype=np.float), 20, facecolor='g', alpha=0.75)
+        plt.xlabel('Ping times (ms)')
+        plt.ylabel('Frequency')
+        plt.title('Ping Time Distribution: 10.9.160.238')
+        plt.grid(True)
+        plt.show()
         sys.exit()
 
     exitCode = ping.returncode
