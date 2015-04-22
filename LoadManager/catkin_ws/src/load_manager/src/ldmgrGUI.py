@@ -139,21 +139,24 @@ class LoadManagerUI(QtGui.QWidget):
                         FRAME_H - (190 + PROCESS_H + CPU_H + SQUARE_SIDE))
 
         # set up quit button
-#        self.kill = QtGui.QPushButton('Exit', self)
-#        self.kill.clicked.connect(self.killAll)
-#        self.kill.move(FRAME_W/2 - 40,
-#                       FRAME_H - (140 + PROCESS_H + CPU_H + SQUARE_SIDE))
+        self.kill = QtGui.QPushButton('Exit', self)
+        self.kill.clicked.connect(self.sendQuit)
+        self.kill.move(FRAME_W/2 - 40,
+                       FRAME_H - (140 + PROCESS_H + CPU_H + SQUARE_SIDE))
 
         # set up main frame
         self.setGeometry(300, 300, FRAME_W, FRAME_H)
         self.setWindowTitle('Load Manager')
         self.show()
 
-    def junk(self, mach, val):
-        self.updateIdleness(mach, val)
-        print "hi"
-        time.sleep(1)
-        self.junk(mach, not val)
+#    def junk(self, mach, val):
+#        self.updateIdleness(mach, val)
+#        print "hi"
+#        time.sleep(1)
+#        self.junk(mach, not val)
+
+    def sendQuit(self):
+        self.thread.ldmgr.killAll()
 
     def run(self):
 #        self.app = QtCore.QCoreApplication([])
