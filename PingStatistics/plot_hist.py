@@ -9,12 +9,12 @@ file = open(sys.argv[1], 'rb')
 data = pickle.load(file)
 file.close()
 
-thresh = np.percentile(data, 94.0)
+thresh = np.percentile(data, 100.0)
 print thresh
 
 n, bins, patches = plt.hist(data[data <= thresh], 20, facecolor='g', alpha=0.75)
 plt.xlabel("Message Age Distribution (ms)")
 plt.ylabel('Frequency')
-plt.title('Message Age of /camera/depth/image_raw/compressed')
+plt.title('Message Age of /scan')
 plt.grid(True)
 plt.show()
